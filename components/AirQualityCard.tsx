@@ -58,7 +58,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
     borderRadius: 14,
-    backgroundColor: 'rgba(143, 164, 193, 0.85)'
+    backgroundColor: 'rgba(143, 164, 193, 0.85)',
+    marginTop: 10,
+    marginBottom: 10
   },
   cardTitleDiv: {
     width: 300,
