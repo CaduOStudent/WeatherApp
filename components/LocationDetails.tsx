@@ -1,9 +1,70 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { getWeatherData } from '../utils/WeatherApi'
 
-export default function LocationDetails() {
+interface LocationDetailsProps {
+    latitude: number
+    longitude: number
+}
+
+export default function LocationDetails({ latitude, longitude }: LocationDetailsProps) {
+
+    const [city, setCity] = useState<string>('Loading...')
+    const [country, setCountry] = useState<string>('Loading...')
+    const [weather, setWeather] = useState<any>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                // Fetch weather data
+                const weatherData = await getWeatherData(latitude, longitude)
+                setWeather(weatherData)
+
+                // Fetch city/country using reverse geocoding
+                const geoRes = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                )
+                const geoJson = await geoRes.json()
+                setCity(geoJson.address?.city || geoJson.address?.town || geoJson.address?.village || 'Unknown')
+                setCountry(geoJson.address?.country || 'Unknown')
+            } catch (err: any) {
+                setError('Failed to load location or weather data')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchData()
+    }, [latitude, longitude])
+
     return (
         <View style={styles.currentLocationTitle}>
+            <View style={styles.currentLocationNameInfos}>
+                <Text style={styles.currentCity}>
+                    {city},{' '}
+                </Text>
+                <Text style={styles.currentCountry}>
+                    {country}
+                </Text>
+            </View>
+            <Text style={styles.currentLocationTemp}>
+                {weather?.current?.temperature2m ?? '--'}º
+            </Text>
+            <Text style={styles.currentLocationCondition}>
+                {weather?.current?.weatherCode !== undefined ? `Code: ${weather.current.weatherCode}` : 'Weather Condition'}
+            </Text>
+            <View style={styles.currentLocationTemps}>
+                <Text style={styles.currentLocationHighandLow}>
+                    H: {weather?.daily?.temperature2mMax?.[0] ?? '--'}º
+                </Text>
+                <Text style={styles.currentLocationHighandLow}>
+                    L: {weather?.daily?.temperature2mMin?.[0] ?? '--'}º
+                </Text>
+            </View>
+        </View>
+        /* Mock details
+            <View style={styles.currentLocationTitle}>
             <View style={styles.currentLocationNameInfos}>
                 <Text style={styles.currentCity}>
                     City Name,{' '}
@@ -26,9 +87,10 @@ export default function LocationDetails() {
                     L: 11º
                 </Text>
             </View>
-        </View>
+        </View> */
     )
 }
+
 
 const styles = StyleSheet.create({
     currentLocationTitle: {

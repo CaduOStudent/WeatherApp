@@ -46,6 +46,10 @@ function getWeatherImage(weatherCode: number) {
 
 export default function HomeScreen() {
   const [weatherCode, setWeatherCode] = useState<number>(0);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLong, setUserLong] = useState<number | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
 
 
   const backgroundImage = getWeatherImage(52);
@@ -60,7 +64,7 @@ export default function HomeScreen() {
     >
       <ScrollView contentContainerStyle={[styles.overlay]} bounces={false}>
 
-        <LocationDetails/>
+        <LocationDetails latitude={0} longitude={0}/>
         <HourlyForecastCard />
         <DailyForecastCard />
         <View style={styles.smallCards}>
