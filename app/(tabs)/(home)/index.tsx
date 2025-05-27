@@ -15,6 +15,8 @@ import DailyForecastCard from '@/components/DailyForecastCard'
 import WindDetailsCard from '@/components/WindDetailsCard'
 import UVIndexCard from '@/components/UVIndexCard'
 import LocationDetails from '@/components/LocationDetails'
+import { getAirQualityData } from '../../../utils/AirQualityApi';
+
 
 
 const device_width = Dimensions.get('window').width
@@ -69,19 +71,13 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  // Fetch air quality index when userLat and userLong are available
+  // Fetch air quality index using your API handler
   useEffect(() => {
     async function fetchAirQuality() {
       if (userLat !== null && userLong !== null) {
         try {
-          // Open-Meteo Air Quality API example
-          const res = await fetch(
-            `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${userLat}&longitude=${userLong}&hourly=european_aqi`
-          );
-          const data = await res.json();
-          // Get the latest AQI value (first value for simplicity)
-          const aqi = data.hourly?.european_aqi?.[0] ?? null;
-          setAirQualityIndex(aqi);
+          const data = await getAirQualityData(userLat, userLong);
+          setAirQualityIndex(data.current.europeanAqi ?? null);
         } catch (err) {
           setAirQualityIndex(null);
         }
@@ -89,7 +85,6 @@ export default function HomeScreen() {
     }
     fetchAirQuality();
   }, [userLat, userLong]);
-
 
   const backgroundImage = getWeatherImage(52);
 
@@ -120,7 +115,7 @@ export default function HomeScreen() {
           <UVIndexCard />
         </View>
 
-        <AirQualityCard airQualityIndex={5} />
+        <AirQualityCard airQualityIndex={airQualityIndex ?? 0} />
       </ScrollView>
 
 
