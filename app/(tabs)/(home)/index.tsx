@@ -49,7 +49,46 @@ export default function HomeScreen() {
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLong, setUserLong] = useState<number | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [airQualityIndex, setAirQualityIndex] = useState<number | null>(null);
 
+
+  useEffect(() => {
+    (async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setLocationError('Permission to access location was denied');
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        setUserLat(location.coords.latitude);
+        setUserLong(location.coords.longitude);
+      } catch (err) {
+        setLocationError('Failed to get user location');
+      }
+    })();
+  }, []);
+
+  // Fetch air quality index when userLat and userLong are available
+  useEffect(() => {
+    async function fetchAirQuality() {
+      if (userLat !== null && userLong !== null) {
+        try {
+          // Open-Meteo Air Quality API example
+          const res = await fetch(
+            `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${userLat}&longitude=${userLong}&hourly=european_aqi`
+          );
+          const data = await res.json();
+          // Get the latest AQI value (first value for simplicity)
+          const aqi = data.hourly?.european_aqi?.[0] ?? null;
+          setAirQualityIndex(aqi);
+        } catch (err) {
+          setAirQualityIndex(null);
+        }
+      }
+    }
+    fetchAirQuality();
+  }, [userLat, userLong]);
 
 
   const backgroundImage = getWeatherImage(52);
@@ -64,9 +103,18 @@ export default function HomeScreen() {
     >
       <ScrollView contentContainerStyle={[styles.overlay]} bounces={false}>
 
-        <LocationDetails latitude={0} longitude={0}/>
+        {locationError ? (
+          <Text>{locationError}</Text>
+        ) : userLat !== null && userLong !== null ? (
+          <LocationDetails latitude={userLat} longitude={userLong} />
+        ) : (
+          <Text>Getting location...</Text>
+        )}
+
         <HourlyForecastCard />
+
         <DailyForecastCard />
+
         <View style={styles.smallCards}>
           <WindDetailsCard />
           <UVIndexCard />
@@ -116,7 +164,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 40
   },
-  
+
   smallCards: {
 
   },
