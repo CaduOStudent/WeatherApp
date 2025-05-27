@@ -86,7 +86,7 @@ export default function HomeScreen() {
     fetchAirQuality();
   }, [userLat, userLong]);
 
-  const backgroundImage = getWeatherImage(52);
+  const backgroundImage = getWeatherImage(weatherCode);
 
 
   return (

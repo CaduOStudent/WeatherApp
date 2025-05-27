@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getWeatherData } from '../utils/WeatherApi'
+import formatValue from '@/utils/FormatValues'
 
 interface LocationDetailsProps {
     latitude: number
@@ -49,17 +50,17 @@ export default function LocationDetails({ latitude, longitude }: LocationDetails
                 </Text>
             </View>
             <Text style={styles.currentLocationTemp}>
-                {weather?.current?.temperature2m ?? '--'}º
+                {formatValue(weather?.current?.temperature2m)?? '--'}º
             </Text>
             <Text style={styles.currentLocationCondition}>
                 {weather?.current?.weatherCode !== undefined ? `Code: ${weather.current.weatherCode}` : 'Weather Condition'}
             </Text>
             <View style={styles.currentLocationTemps}>
                 <Text style={styles.currentLocationHighandLow}>
-                    H: {weather?.daily?.temperature2mMax?.[0] ?? '--'}º
+                    H: {formatValue(weather?.daily?.temperature2mMax?.[0]) ?? '--'}º
                 </Text>
                 <Text style={styles.currentLocationHighandLow}>
-                    L: {weather?.daily?.temperature2mMin?.[0] ?? '--'}º
+                    L: {formatValue(weather?.daily?.temperature2mMin?.[0]) ?? '--'}º
                 </Text>
             </View>
         </View>

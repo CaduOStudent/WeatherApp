@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { LinearGradient } from 'expo-linear-gradient'
+import formatValue from '@/utils/FormatValues'
 
 type AirQualityCardProps = {
   airQualityIndex: number
@@ -9,9 +10,12 @@ type AirQualityCardProps = {
 
 export default function AirQualityCard({ airQualityIndex }: AirQualityCardProps) {
   function getAirQualityText(index: number) {
-    if (index <= 2) return 'Good';
-    if (index <= 4) return 'Moderate';
-    if (index <= 6) return 'Unhealthy';
+    if (index <= 10) return 'Good';
+    if (index <= 20) return 'Fair';
+    if (index <= 25) return 'Moderate';
+    if (index <= 50) return 'Poor';
+    if (index <= 75) return 'Very Poor';
+    if (index <= 800) return 'Extremely Poor';
     return 'Very Unhealthy';
   }
 
@@ -20,7 +24,7 @@ export default function AirQualityCard({ airQualityIndex }: AirQualityCardProps)
   // Clamp index between 0 and 10
   const clampedIndex = Math.max(0, Math.min(airQualityIndex, 10));
   // Calculate pointer position
-  const pointerLeft = (clampedIndex / 10) * barWidth - 2.5; // 2.5 = pointer width/2
+  const pointerLeft = (clampedIndex / 80) * barWidth - 2.5; // 2.5 = pointer width/2
 
   return (
     <View style={styles.airQualityCardBaseStyle}>
@@ -30,7 +34,7 @@ export default function AirQualityCard({ airQualityIndex }: AirQualityCardProps)
       </View>
       <View style={styles.div} />
       <View style={styles.AQInfos}>
-        <Text style={styles.AQIndex}>{airQualityIndex}</Text>
+        <Text style={styles.AQIndex}>{formatValue(airQualityIndex)}</Text>
         <Text style={styles.AQText}>{getAirQualityText(airQualityIndex)}</Text>
       </View>
       <View style={styles.scaleBarContainer}>
