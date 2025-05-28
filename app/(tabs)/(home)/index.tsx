@@ -33,17 +33,21 @@ const weatherImages: { [key: string]: any } = {
   fog: require('@/assets/images/backgroundImages/foggy.jpg'),
   snow: require('@/assets/images/backgroundImages/snowy.jpg'),
   wind: require('@/assets/images/backgroundImages/windy.jpg'),
+  partCloudy: require('@/assets/images/backgroundImages/partly-cloudy.jpg'),
 
 }
 
 function getWeatherImage(weatherCode: number) {
   // Example mapping, adjust according to OpenMeteo codes
-  if (weatherCode === 0) return weatherImages.clear;
-  if (weatherCode >= 1 && weatherCode <= 3) return weatherImages.cloudy;
-  if (weatherCode >= 51 && weatherCode <= 63) return weatherImages.rain;
-  if (weatherCode >= 64 && weatherCode <= 67) return weatherImages.thunderstorm;
+  if (weatherCode === 0) return weatherImages.sunny;
+  if (weatherCode >= 2 && weatherCode <= 10) return weatherImages.partCloudy;
+  if (weatherCode >= 1 && weatherCode <= 46) return weatherImages.cloudy;
+  if (weatherCode >= 47 && weatherCode <= 57) return weatherImages.fog;
+  if (weatherCode >= 58 && weatherCode <= 67) return weatherImages.rain;
+  if (weatherCode >= 68 && weatherCode <= 77) return weatherImages.snow;
+  if (weatherCode >= 95 && weatherCode <= 99) return weatherImages.thunderstorm;
   // ...add more logic as needed
-  return weatherImages.clear;
+  return weatherImages.sunny;
 }
 
 
