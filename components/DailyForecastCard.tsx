@@ -5,109 +5,58 @@ import { getWeatherData } from '../utils/WeatherApi';
 import { weatherCodeIonicons } from '../utils/WeatherCodes';
 import formatValue from '@/utils/FormatValues';
 
-interface HourlyForecastCardProps {
-  latitude: number | null;
-  longitude: number | null;
+interface DailyForecastCardProps {
+  weather: any;
 }
-
-export default function DailyForecastCard({ latitude, longitude }: HourlyForecastCardProps) {
-
-  const [daily, setDaily] = useState<{
-    time: Date[];
-    temperature2mMax: number[];
-    temperature2mMin: number[];
-    weatherCode: number[];
-  } | null>(null);
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchWeather() {
-      if (latitude == null || longitude == null) {
-        setDaily(null);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        const data = await getWeatherData(latitude, longitude);
-        setDaily({
-          time: data.daily.time,
-          temperature2mMax: data.daily.temperature2mMax,
-          temperature2mMin: data.daily.temperature2mMin,
-          weatherCode: data.daily.weatherCode,
-        });
-      } catch (err) {
-        setDaily(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchWeather();
-  }, [latitude, longitude]);
+export default function DailyForecastCard({ weather }: DailyForecastCardProps) {
+  const daily = weather?.daily;
 
   function createDailyCards() {
-  if (!daily || !daily.time || !daily.temperature2mMax || !daily.temperature2mMin || !daily.weatherCode) return null;
+    if (!daily || !daily.time || !daily.temperature2mMax || !daily.temperature2mMin || !daily.weatherCode) return null;
 
-  // Ensure all times are Date objects
-  const times = daily.time.map(t => t instanceof Date ? t : new Date(t));
-  const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const times = daily.time.map((t: string | Date) => t instanceof Date ? t : new Date(t));
+    const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  return Array.from({ length: 10 }).map((_, i) => {
-    if (
-      i >= times.length ||
-      i >= daily.temperature2mMax.length ||
-      i >= daily.temperature2mMin.length ||
-      i >= daily.weatherCode.length
-    ) return null;
+    return Array.from({ length: 10 }).map((_, i) => {
+      if (
+        i >= times.length ||
+        i >= daily.temperature2mMax.length ||
+        i >= daily.temperature2mMin.length ||
+        i >= daily.weatherCode.length
+      ) return null;
 
-    const dayTime = times[i];
-    const maxDailyTemp = daily.temperature2mMax[i];
-    const minDailyTemp = daily.temperature2mMin[i];
-    const code = daily.weatherCode[i];
-    const iconName = (weatherCodeIonicons[code] || "help") as React.ComponentProps<typeof Ionicons>["name"];
-    const dayLabel = i === 0 ? "Today" : weekDays[dayTime.getDay()];
+      const dayTime = times[i];
+      const maxDailyTemp = daily.temperature2mMax[i];
+      const minDailyTemp = daily.temperature2mMin[i];
+      const code = daily.weatherCode[i];
+      const iconName = (weatherCodeIonicons[code] || "help") as React.ComponentProps<typeof Ionicons>["name"];
+      const dayLabel = i === 0 ? "Today" : weekDays[dayTime.getDay()];
 
-    return (
-      <View key={i} style={styles.eachCard}>
-        <Text style={styles.dayStamp}>{dayLabel}</Text>
-        <Ionicons name={iconName} size={30} color='black' />
-        <View style={styles.dayTemps}>
-          <Text style={styles.dayTemp}>{formatValue(minDailyTemp)}º</Text>
-          <Text style={styles.dayTemp}>{formatValue(maxDailyTemp)}º</Text>
+      return (
+        <View key={i} style={styles.eachCard}>
+          <Text style={styles.dayStamp}>{dayLabel}</Text>
+          <Ionicons name={iconName} size={30} color='black' />
+          <View style={styles.dayTemps}>
+            <Text style={styles.dayTemp}>{formatValue(minDailyTemp)}º</Text>
+            <Text style={styles.dayTemp}>{formatValue(maxDailyTemp)}º</Text>
+          </View>
         </View>
-      </View>
-    );
-  });
-}
+      );
+    });
+  }
 
   return (
     <View style={styles.DailyCardBase}>
       <View style={styles.cardTitleDiv}>
-
-        <Text style={styles.cardTitle}>
-          Daily forecast
-        </Text>
-
-        <Ionicons
-          name="today-outline"
-          size={20}
-          color="black" />
-
+        <Text style={styles.cardTitle}>10-Day Forecast</Text>
+        <Ionicons name="calendar-outline" size={20} color="black" />
       </View>
-
       <View style={styles.div} />
-
-      <ScrollView
-        bounces={false}
-        style={styles.dailyCardsView}>
-        {loading ?
-          <Text>Loading...</Text> :
-          createDailyCards()}
-      </ScrollView>
-
+      <View style={styles.dailyCardsView}>
+        {createDailyCards()}
+      </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -160,7 +109,7 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     padding: 5,
     marginRight: 10,
-    
+
   },
   dayStamp: {
     width: 90,
@@ -178,8 +127,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
-    
-    
+
+
 
   },
   dayTemp: {

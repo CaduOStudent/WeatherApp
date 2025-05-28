@@ -6,69 +6,40 @@ import { weatherCodeIonicons } from '../utils/WeatherCodes';
 import formatValue from '@/utils/FormatValues';
 
 interface HourlyForecastCardProps {
-  latitude: number | null;
-  longitude: number | null;
+  weather: any;
 }
 
 
 
-export default function HourlyForecastCard({ latitude, longitude }: HourlyForecastCardProps) {
-  const [hourly, setHourly] = useState<{
-    time: Date[];
-    temperature2m: number[];
-    weatherCode: number[];
-  } | null>(null);
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchWeather() {
-      if (latitude == null || longitude == null) {
-        setHourly(null);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        const data = await getWeatherData(latitude, longitude);
-        setHourly({
-          time: data.hourly.time,
-          temperature2m: data.hourly.temperature2m,
-          weatherCode: data.hourly.weatherCode,
-        });
-      } catch (err) {
-        setHourly(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchWeather();
-  }, [latitude, longitude]);
-
+export default function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
   function createHourlyCards() {
-    if (!hourly || !hourly.time || !hourly.temperature2m || !hourly.weatherCode) return null;
+    if (
+      !weather?.hourly?.time ||
+      !weather?.hourly?.temperature2m ||
+      !weather?.hourly?.weatherCode
+    ) return null;
 
     // Ensure all times are Date objects
-    const times = hourly.time.map(t => t instanceof Date ? t : new Date(t));
+    const times = weather.hourly.time.map((t: string | Date) => t instanceof Date ? t : new Date(t));
 
     const now = new Date();
     now.setMinutes(0, 0, 0);
 
     // Find the first index where the hour is >= current hour
-    const firstIndex = times.findIndex(t => t >= now);
+    const firstIndex = times.findIndex((t: Date) => t >= now);
     const start = firstIndex === -1 ? 0 : firstIndex;
 
     return Array.from({ length: 24 }).map((_, i) => {
       const idx = start + i;
       if (
         idx >= times.length ||
-        idx >= hourly.temperature2m.length ||
-        idx >= hourly.weatherCode.length
+        idx >= weather.hourly.temperature2m.length ||
+        idx >= weather.hourly.weatherCode.length
       ) return null;
 
       const hourTime = times[idx];
-      const temp = hourly.temperature2m[idx];
-      const code = hourly.weatherCode[idx];
+      const temp = weather.hourly.temperature2m[idx];
+      const code = weather.hourly.weatherCode[idx];
       const iconName = (weatherCodeIonicons[code] || "help") as React.ComponentProps<typeof Ionicons>["name"];
       const hourLabel = i === 0 ? "Now" : hourTime.getHours().toString().padStart(2, '0') + ":00";
       return (
@@ -80,6 +51,7 @@ export default function HourlyForecastCard({ latitude, longitude }: HourlyForeca
       );
     });
   }
+
   return (
     <View style={styles.CardBaseStyle}>
       <View style={styles.cardTitleDiv}>
@@ -88,7 +60,7 @@ export default function HourlyForecastCard({ latitude, longitude }: HourlyForeca
       </View>
       <View style={styles.div} />
       <ScrollView horizontal bounces={false} style={styles.hourlyCards}>
-        {loading ? <Text>Loading...</Text> : createHourlyCards()}
+        {createHourlyCards()}
       </ScrollView>
     </View>
   );

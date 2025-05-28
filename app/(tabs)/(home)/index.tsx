@@ -134,9 +134,9 @@ export default function HomeScreen() {
           <Text>Getting location...</Text>
         )}
 
-        <HourlyForecastCard latitude={userLat} longitude={userLong} />
+        <HourlyForecastCard weather={weather} />
 
-        <DailyForecastCard latitude={userLat} longitude={userLong} />
+        <DailyForecastCard weather={weather} />
 
         <View style={styles.smallCards}>
           <FeelsLikeCard
