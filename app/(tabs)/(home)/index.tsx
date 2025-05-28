@@ -59,6 +59,7 @@ export default function HomeScreen() {
   const [userLong, setUserLong] = useState<number | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [airQualityIndex, setAirQualityIndex] = useState<number | null>(null);
+  const [weather, setWeather] = useState<any>(null);
 
 
   useEffect(() => {
@@ -95,19 +96,20 @@ export default function HomeScreen() {
 
   // Fetch weather data and set weatherCode
   useEffect(() => {
-    async function fetchWeather() {
-      if (userLat !== null && userLong !== null) {
-        try {
-          const data = await getWeatherData(userLat, userLong);
-          // Set the weather code from the current weather
-          setWeatherCode(data.current.weatherCode ?? 0);
-        } catch (err) {
-          setWeatherCode(0); // fallback
-        }
+  async function fetchWeather() {
+    if (userLat !== null && userLong !== null) {
+      try {
+        const data = await getWeatherData(userLat, userLong);
+        setWeather(data);
+        setWeatherCode(data.current.weatherCode ?? 0);
+      } catch (err) {
+        setWeather(null);
+        setWeatherCode(0);
       }
     }
-    fetchWeather();
-  }, [userLat, userLong]);
+  }
+  fetchWeather();
+}, [userLat, userLong]);
 
   const backgroundImage = getWeatherImage(weatherCode);
 
@@ -131,21 +133,24 @@ export default function HomeScreen() {
 
         <HourlyForecastCard latitude={userLat} longitude={userLong} />
 
-        <DailyForecastCard  latitude={userLat} longitude={userLong}/>
+        <DailyForecastCard latitude={userLat} longitude={userLong} />
 
         <View style={styles.smallCards}>
-          <FeelsLikeCard/>
+          <FeelsLikeCard
+            apparentTemperature={weather?.current?.apparentTemperature}
+            weatherCode={weather?.current?.weatherCode}
+          />
           <WindDetailsCard />
-          
+
         </View>
 
         <AirQualityCard airQualityIndex={airQualityIndex ?? 0} />
 
         <View style={styles.smallCards}>
-          
+
           <UVIndexCard />
-          <PrecipitationCard/>
-          
+          <PrecipitationCard />
+
         </View>
       </ScrollView>
 
