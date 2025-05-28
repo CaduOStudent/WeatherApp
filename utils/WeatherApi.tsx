@@ -19,7 +19,10 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			"showers_sum",
 			"snowfall_sum",
 			"temperature_2m_max",
-			"temperature_2m_min"
+			"temperature_2m_min",
+			"weather_code",
+			
+			
 		],
 		hourly: [
 			"temperature_2m",
@@ -154,6 +157,7 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			snowfallSum: daily.variables(5)?.valuesArray(),
 			temperature2mMax: daily.variables(6)?.valuesArray(),
 			temperature2mMin: daily.variables(7)?.valuesArray(),
+			weatherCode: daily.variables(8)?.valuesArray(),
 		},
 	};
 }
