@@ -2,10 +2,24 @@ import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
-export default function WindDetailsCard() {
+interface WindDetailsCardProps {
+  weather: any;
+}
+
+function getWindDirection(degrees: number | null | undefined): string {
+  if (degrees === null || degrees === undefined) return '--';
+  const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N'];
+  return dirs[Math.round((degrees % 360) / 45)];
+}
+
+export default function WindDetailsCard({ weather }: WindDetailsCardProps) {
+  const windSpeed = weather?.current?.windSpeed10m ?? '--';
+  const windGusts = weather?.current?.windGusts10m ?? '--';
+  const windDirection = weather?.current?.windDirection10m ?? '--';
+  const windDirLabel = getWindDirection(windDirection);
+
   return (
     <View style={styles.WindCardBase}>
-
       <View style={styles.WindCardTop}>
         <View style={styles.WindCardTitle}>
           <Text>Wind</Text>
@@ -15,54 +29,37 @@ export default function WindDetailsCard() {
       </View>
 
       <View style={styles.WindCardMiddle}>
-
         <View style={styles.WindCardMiddleLeft}>
-
           <View style={styles.WindDetails}>
-            <Text style={styles.WindDetailParam}>
-              Wind
-            </Text>
+            <Text style={styles.WindDetailParam}>Wind</Text>
             <Text style={styles.WindDetailValue}>
-              10 km/h
+              {windSpeed !== '--' ? `${Math.round(windSpeed)} km/h` : '--'}
             </Text>
           </View>
-
           <View style={styles.divSmall} />
-
           <View style={styles.WindDetails}>
-            <Text style={styles.WindDetailParam}>
-              Gusts
-            </Text>
+            <Text style={styles.WindDetailParam}>Gusts</Text>
             <Text style={styles.WindDetailValue}>
-              22 km/h
+              {windGusts !== '--' ? `${Math.round(windGusts)} km/h` : '--'}
             </Text>
           </View>
-
           <View style={styles.divSmall} />
-
           <View style={styles.WindDetails}>
-            
-
-            <Text style={styles.WindDetailParam}>
-              Direction
-            </Text>
-
+            <Text style={styles.WindDetailParam}>Direction</Text>
             <Text style={styles.WindDetailValue}>
-              305º
+              {windDirection !== '--' ? `${Math.round(windDirection)}º` : '--'}
             </Text>
-
           </View>
-
         </View>
-
         <Text style={styles.WindMainDirection}>
-          NW
+          {windDirLabel}
         </Text>
-
       </View>
     </View>
   )
 }
+
+
 
 const styles = StyleSheet.create({
   WindCardBase: {

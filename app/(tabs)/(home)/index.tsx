@@ -140,7 +140,7 @@ export default function HomeScreen() {
             apparentTemperature={weather?.current?.apparentTemperature}
             weatherCode={weather?.current?.weatherCode}
           />
-          <WindDetailsCard />
+          <WindDetailsCard weather={weather} />
 
         </View>
 
