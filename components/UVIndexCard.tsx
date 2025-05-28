@@ -71,7 +71,7 @@ export default function UVIndexCard({ weather }: UVIndexCardProps) {
 
 const styles = StyleSheet.create({
   UVCardBase: {
-    width: 155,
+    width: 180,
     maxHeight: 200,
     display: 'flex',
     flexDirection: 'column',
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     padding: 10
   },
   UVCardTitle: {
-    width: 135,
+    width: '90%',
     height: 22,
     display: 'flex',
     alignItems: 'center',
@@ -92,12 +92,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   div: {
-    width: 145,
+    width: '95%',
     height: 2,
     backgroundColor: '#7A9AC9'
   },
   UVIndexDetails: {
-    width: 135,
+    width: '90%',
     marginTop: 3,
     display: 'flex',
     flexDirection: 'column',
@@ -115,14 +115,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   scaleBarContainer: {
-    width: 135,
+    width: '90%',
     height: 20,
     justifyContent: 'center',
     position: 'relative',
     marginTop: 8,
   },
   scaleBar: {
-    width: 128,
+    width: '100%',
     height: 4,
     borderRadius: 20,
     position: 'absolute',
@@ -141,8 +141,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   UseSunProtection: {
-    
-    
+    width: '95%',
     color: 'black',
     fontFamily: 'Helvetica',
     fontSize: 15,
