@@ -109,7 +109,7 @@ export default function HomeScreen() {
 
         <HourlyForecastCard latitude={userLat} longitude={userLong} />
 
-        <DailyForecastCard />
+        <DailyForecastCard  latitude={userLat} longitude={userLong}/>
 
         <View style={styles.smallCards}>
           <WindDetailsCard />

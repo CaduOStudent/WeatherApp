@@ -10,6 +10,8 @@ interface HourlyForecastCardProps {
   longitude: number | null;
 }
 
+
+
 export default function HourlyForecastCard({ latitude, longitude }: HourlyForecastCardProps) {
   const [hourly, setHourly] = useState<{
     time: Date[];
@@ -43,36 +45,41 @@ export default function HourlyForecastCard({ latitude, longitude }: HourlyForeca
     fetchWeather();
   }, [latitude, longitude]);
 
-
   function createHourlyCards() {
-    if (!hourly) return null;
+    if (!hourly || !hourly.time || !hourly.temperature2m || !hourly.weatherCode) return null;
+
+    // Ensure all times are Date objects
+    const times = hourly.time.map(t => t instanceof Date ? t : new Date(t));
+
     const now = new Date();
-    // Find the first index >= now
-    const firstIndex = hourly.time.findIndex(t => t >= now);
+    now.setMinutes(0, 0, 0);
+
+    // Find the first index where the hour is >= current hour
+    const firstIndex = times.findIndex(t => t >= now);
     const start = firstIndex === -1 ? 0 : firstIndex;
 
     return Array.from({ length: 24 }).map((_, i) => {
       const idx = start + i;
-      const hourTime = hourly.time[idx];
+      if (
+        idx >= times.length ||
+        idx >= hourly.temperature2m.length ||
+        idx >= hourly.weatherCode.length
+      ) return null;
+
+      const hourTime = times[idx];
       const temp = hourly.temperature2m[idx];
       const code = hourly.weatherCode[idx];
-      const iconName = weatherCodeIonicons[code] || "help";
-      const hourLabel =
-        i === 0
-          ? "Now"
-          : hourTime
-            ? hourTime.getHours().toString().padStart(2, '0') + ":00"
-            : "--:--";
+      const iconName = (weatherCodeIonicons[code] || "help") as React.ComponentProps<typeof Ionicons>["name"];
+      const hourLabel = i === 0 ? "Now" : hourTime.getHours().toString().padStart(2, '0') + ":00";
       return (
         <View key={idx} style={styles.eachCard}>
           <Text style={styles.hourStamp}>{hourLabel}</Text>
-          <Ionicons name={iconName as React.ComponentProps<typeof Ionicons>['name']} size={30} color='black' />
+          <Ionicons name={iconName} size={30} color='black' />
           <Text style={styles.hoursTemp}>{formatValue(temp)}º</Text>
         </View>
       );
     });
   }
-
   return (
     <View style={styles.CardBaseStyle}>
       <View style={styles.cardTitleDiv}>

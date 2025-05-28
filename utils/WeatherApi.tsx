@@ -53,8 +53,8 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			"temperature_2m_min"
 		],
 		timezone: "auto",
-		forecast_hours: 1,
-		forecast_minutely_15: 4
+		//forecast_hours: 24,
+		//forecast_minutely_15: 4
 	};
 	const url = "https://api.open-meteo.com/v1/forecast";
 	const responses = await fetchWeatherApi(url, params);
