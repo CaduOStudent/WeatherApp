@@ -8,8 +8,8 @@ export default function WindDetailsCard() {
 
       <View style={styles.WindCardTop}>
         <View style={styles.WindCardTitle}>
-          <Text>Feels Like</Text>
-          <Ionicons name="thermometer-outline" size={20} color="black" />
+          <Text>Wind</Text>
+          <Ionicons name="paper-plane-outline" size={20} color="black" />
         </View>
         <View style={styles.divLarge} />
       </View>
@@ -80,9 +80,14 @@ const styles = StyleSheet.create({
   },
   WindCardTop: {
     width: 170,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 3
   },
   WindCardTitle: {
-    width: 100,
+    width: 170,
     height: 22,
     display: 'flex',
     alignItems: 'center',
