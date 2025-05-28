@@ -3,18 +3,12 @@ import { View, Text, Switch, StyleSheet } from 'react-native';
 import { setUnitSettings, getUnitSettings } from '@/utils/MesuresChangeAPI';
 
 export default function Settings() {
-  const [isMetric, setIsMetric] = useState(getUnitSettings().isMetric);
-  const [is24h, setIs24h] = useState(getUnitSettings().is24h);
+  const initial = getUnitSettings();
+  const [speedMetric, setSpeedMetric] = useState(initial.speedMetric);
+  const [tempMetric, setTempMetric] = useState(initial.tempMetric);
+  const [precipMetric, setPrecipMetric] = useState(initial.precipMetric);
+  const [is24h, setIs24h] = useState(initial.is24h);
 
-  const handleUnitChange = (newMetric: boolean) => {
-    setIsMetric(newMetric);
-    setUnitSettings({ isMetric: newMetric, is24h });
-  };
-
-  const handleHourChange = (new24h: boolean) => {
-    setIs24h(new24h);
-    setUnitSettings({ isMetric, is24h: new24h });
-  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Settings</Text>
@@ -22,35 +16,47 @@ export default function Settings() {
       <View style={styles.settingRow}>
         <Text style={styles.label}>Speed (km/h / mi/h)</Text>
         <Switch
-          value={isMetric}
-          onValueChange={() => setIsMetric(!isMetric)}
+          value={speedMetric}
+          onValueChange={(val) => {
+            setSpeedMetric(val);
+            setUnitSettings({ speedMetric: val });
+          }}
         />
-        <Text style={styles.value}>{isMetric ? 'km/h' : 'mi/h'}</Text>
+        <Text style={styles.value}>{speedMetric ? 'km/h' : 'mi/h'}</Text>
       </View>
 
       <View style={styles.settingRow}>
         <Text style={styles.label}>Temperature (ºC / ºF)</Text>
         <Switch
-          value={isMetric}
-          onValueChange={() => setIsMetric(!isMetric)}
+          value={tempMetric}
+          onValueChange={(val) => {
+            setTempMetric(val);
+            setUnitSettings({ tempMetric: val });
+          }}
         />
-        <Text style={styles.value}>{isMetric ? 'ºC' : 'ºF'}</Text>
+        <Text style={styles.value}>{tempMetric ? 'ºC' : 'ºF'}</Text>
       </View>
 
       <View style={styles.settingRow}>
         <Text style={styles.label}>Precipitation (mm / in)</Text>
         <Switch
-          value={isMetric}
-          onValueChange={() => setIsMetric(!isMetric)}
+          value={precipMetric}
+          onValueChange={(val) => {
+            setPrecipMetric(val);
+            setUnitSettings({ precipMetric: val });
+          }}
         />
-        <Text style={styles.value}>{isMetric ? 'mm' : 'in'}</Text>
+        <Text style={styles.value}>{precipMetric ? 'mm' : 'in'}</Text>
       </View>
 
       <View style={styles.settingRow}>
         <Text style={styles.label}>Hour Format (24h / 12h)</Text>
         <Switch
           value={is24h}
-          onValueChange={() => setIs24h(!is24h)}
+          onValueChange={(val) => {
+            setIs24h(val);
+            setUnitSettings({ is24h: val });
+          }}
         />
         <Text style={styles.value}>{is24h ? '24h' : '12h'}</Text>
       </View>
