@@ -16,6 +16,8 @@ import WindDetailsCard from '@/components/WindDetailsCard'
 import UVIndexCard from '@/components/UVIndexCard'
 import LocationDetails from '@/components/LocationDetails'
 import { getAirQualityData } from '../../../utils/AirQualityApi';
+import FeelsLikeCard from '@/components/FeelsLikeCard'
+import PrecipitationCard from '@/components/PrecipitationCard'
 
 
 
@@ -132,11 +134,19 @@ export default function HomeScreen() {
         <DailyForecastCard  latitude={userLat} longitude={userLong}/>
 
         <View style={styles.smallCards}>
+          <FeelsLikeCard/>
           <WindDetailsCard />
-          <UVIndexCard />
+          
         </View>
 
         <AirQualityCard airQualityIndex={airQualityIndex ?? 0} />
+
+        <View style={styles.smallCards}>
+          
+          <UVIndexCard />
+          <PrecipitationCard/>
+          
+        </View>
       </ScrollView>
 
 
@@ -182,6 +192,11 @@ const styles = StyleSheet.create({
   },
 
   smallCards: {
+    width: 330,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
 
   },
 

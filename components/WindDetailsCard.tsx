@@ -1,14 +1,164 @@
-import { Text, View } from 'react-native'
-import React, { Component } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import React from 'react'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
-export class WindDetailsCard extends Component {
-  render() {
-    return (
-      <View>
-        <Text>WindDetailsCard</Text>
+export default function WindDetailsCard() {
+  return (
+    <View style={styles.WindCardBase}>
+
+      <View style={styles.WindCardTop}>
+        <View style={styles.WindCardTitle}>
+          <Text>Feels Like</Text>
+          <Ionicons name="thermometer-outline" size={20} color="black" />
+        </View>
+        <View style={styles.divLarge} />
       </View>
-    )
-  }
+
+      <View style={styles.WindCardMiddle}>
+
+        <View style={styles.WindCardMiddleLeft}>
+
+          <View style={styles.WindDetails}>
+            <Text style={styles.WindDetailParam}>
+              Wind
+            </Text>
+            <Text style={styles.WindDetailValue}>
+              10 km/h
+            </Text>
+          </View>
+
+          <View style={styles.divSmall} />
+
+          <View style={styles.WindDetails}>
+            <Text style={styles.WindDetailParam}>
+              Gusts
+            </Text>
+            <Text style={styles.WindDetailValue}>
+              22 km/h
+            </Text>
+          </View>
+
+          <View style={styles.divSmall} />
+
+          <View style={styles.WindDetails}>
+            
+
+            <Text style={styles.WindDetailParam}>
+              Direction
+            </Text>
+
+            <Text style={styles.WindDetailValue}>
+              305º
+            </Text>
+
+          </View>
+
+        </View>
+
+        <Text style={styles.WindMainDirection}>
+          NW
+        </Text>
+
+      </View>
+    </View>
+  )
 }
 
-export default WindDetailsCard
+const styles = StyleSheet.create({
+  WindCardBase: {
+    width: 190,
+    height: 115,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    borderRadius: 14,
+    backgroundColor: 'rgba(143, 164, 193, 0.85)',
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 5
+  },
+  WindCardTop: {
+    width: 170,
+  },
+  WindCardTitle: {
+    width: 100,
+    height: 22,
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 24,
+
+  },
+  divLarge: {
+    width: 165,
+    height: 2,
+    backgroundColor: '#7A9AC9'
+  },
+  WindCardMiddle: {
+    width: 170,
+    minHeight: 80,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  WindCardMiddleLeft: {
+    width: 110,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    gap: 5,
+    alignItems: 'flex-start'
+
+  },
+  WindDetails: {
+    width: 100,
+    height: 15,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent : 'space-between',
+    alignItems: 'center'
+
+
+  },
+  WindDetailParam: {
+    
+    color: '#474747',
+    fontFamily: 'Helvetica',
+    fontSize: 11,
+    verticalAlign: 'middle',
+    textAlign: 'left',
+    padding: 3,
+  },
+  WindDetailValue: {
+   
+    color: '#474747',
+    fontFamily: 'Helvetica',
+    verticalAlign: 'middle',
+    textAlign: 'right',
+    fontSize: 11,
+    padding: 3,
+
+
+  },
+  divSmall: {
+    width: 100,
+    height: 2,
+    backgroundColor: '#7A9AC9'
+  },
+  WindMainDirection: {
+    width: 55,
+    height: 40,
+    fontSize: 30,
+    fontFamily: 'Helvetica',
+    color: 'black',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+    marginTop: 2,
+    marginBottom: 2
+  },
+
+
+});
