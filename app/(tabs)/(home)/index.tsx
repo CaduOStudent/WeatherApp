@@ -87,6 +87,22 @@ export default function HomeScreen() {
     fetchAirQuality();
   }, [userLat, userLong]);
 
+  // Fetch weather data and set weatherCode
+  useEffect(() => {
+    async function fetchWeather() {
+      if (userLat !== null && userLong !== null) {
+        try {
+          const data = await getWeatherData(userLat, userLong);
+          // Set the weather code from the current weather
+          setWeatherCode(data.current.weatherCode ?? 0);
+        } catch (err) {
+          setWeatherCode(0); // fallback
+        }
+      }
+    }
+    fetchWeather();
+  }, [userLat, userLong]);
+
   const backgroundImage = getWeatherImage(weatherCode);
 
 
