@@ -19,6 +19,7 @@ import { getAirQualityData } from '../../../utils/AirQualityApi';
 
 
 
+
 const device_width = Dimensions.get('window').width
 const device_height = Dimensions.get('window').height
 
@@ -106,7 +107,7 @@ export default function HomeScreen() {
           <Text>Getting location...</Text>
         )}
 
-        <HourlyForecastCard />
+        <HourlyForecastCard latitude={userLat} longitude={userLong} />
 
         <DailyForecastCard />
 

@@ -17,7 +17,9 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			"daylight_duration",
 			"rain_sum",
 			"showers_sum",
-			"snowfall_sum"
+			"snowfall_sum",
+			"temperature_2m_max",
+			"temperature_2m_min"
 		],
 		hourly: [
 			"temperature_2m",
@@ -25,7 +27,8 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			"cloud_cover",
 			"precipitation",
 			"wind_speed_10m",
-			"uv_index"
+			"uv_index",
+
 		],
 		current: [
 			"weather_code",
@@ -36,14 +39,18 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			"wind_speed_10m",
 			"wind_direction_10m",
 			"wind_gusts_10m",
-			"cloud_cover"
+			"cloud_cover",
+			"temperature_2m_max",
+			"temperature_2m_min"
 		],
 		minutely_15: [
 			"temperature_2m",
 			"precipitation",
 			"is_day",
 			"wind_speed_80m",
-			"apparent_temperature"
+			"apparent_temperature",
+			"temperature_2m_max",
+			"temperature_2m_min"
 		],
 		timezone: "auto",
 		forecast_hours: 1,
@@ -102,7 +109,14 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 				windSpeed80m: minutely15.variables(3)?.valuesArray(),
 				apparentTemperature: minutely15.variables(4)?.valuesArray(),
 			}
-			: null,
+			: {
+				time: [],
+				temperature2m: [],
+				precipitation: [],
+				isDay: [],
+				windSpeed80m: [],
+				apparentTemperature: [],
+			},
 		hourly: hourly
 			? {
 				time: buildTimeArray(hourly),
@@ -113,7 +127,15 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 				windSpeed10m: hourly.variables(4)?.valuesArray(),
 				uvIndex: hourly.variables(5)?.valuesArray(),
 			}
-			: null,
+			: {
+				time: [],
+				temperature2m: [],
+				weatherCode: [],
+				cloudCover: [],
+				precipitation: [],
+				windSpeed10m: [],
+				uvIndex: [],
+			},
 		daily: {
 			time: buildTimeArray(daily),
 			sunrise: sunrise
@@ -130,6 +152,8 @@ export async function getWeatherData(latitude: number, longitude: number): Promi
 			rainSum: daily.variables(3)?.valuesArray(),
 			showersSum: daily.variables(4)?.valuesArray(),
 			snowfallSum: daily.variables(5)?.valuesArray(),
+			temperature2mMax: daily.variables(6)?.valuesArray(),
+			temperature2mMin: daily.variables(7)?.valuesArray(),
 		},
 	};
 }
