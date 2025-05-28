@@ -1,33 +1,47 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { getClothesRecommendation } from '../utils/ClothesRecomendations'
 import formatValue from '@/utils/FormatValues'
 
-export default function PrecipitationCard() {
+interface PrecipitationCardProps {
+  weather: any;
+}
+
+export default function PrecipitationCard({ weather }: PrecipitationCardProps) {
+  // Get today's precipitation (from daily data)
+  const todayPrecip = weather?.daily?.rainSum?.[0] ?? 0;
+
+  // Get future precipitation (e.g., next day's forecast)
+  const futurePrecip = weather?.daily?.rainSum?.[1] ?? 0;
+
+  // Optionally, you could use hourly data for more granularity
+
   return (
     <View style={styles.PrecipitationCardBase}>
       <View style={styles.PrecipitationCardTitle}>
-        <Text>Preciptation</Text>
+        <Text>Precipitation</Text>
         <Ionicons name="water-outline" size={20} color="black" />
       </View>
       <View style={styles.div} />
       <View style={styles.PrecipitationAmount}>
         <Text style={styles.PrecipitationAmountValue}>
-          4 mm
+          {formatValue(todayPrecip)} mm
         </Text>
         <Text style={styles.PrecipitationAmountMoment}>
           Today
         </Text>
-
       </View>
       <View style={styles.div} />
       <Text style={styles.FuturePrecipitation}>
-        2 mm expected later
+        {futurePrecip > 0
+          ? `${formatValue(futurePrecip)} mm expected tomorrow`
+          : 'No significant precipitation expected tomorrow'}
       </Text>
     </View>
   )
 }
+
+// ...styles unchanged...
 
 
 const styles = StyleSheet.create({

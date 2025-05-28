@@ -96,32 +96,35 @@ export default function HomeScreen() {
 
   // Fetch weather data and set weatherCode
   useEffect(() => {
-  async function fetchWeather() {
-    if (userLat !== null && userLong !== null) {
-      try {
-        const data = await getWeatherData(userLat, userLong);
-        setWeather(data);
-        setWeatherCode(data.current.weatherCode ?? 0);
-      } catch (err) {
-        setWeather(null);
-        setWeatherCode(0);
+    async function fetchWeather() {
+      if (userLat !== null && userLong !== null) {
+        try {
+          const data = await getWeatherData(userLat, userLong);
+          setWeather(data);
+          setWeatherCode(data.current.weatherCode ?? 0);
+        } catch (err) {
+          setWeather(null);
+          setWeatherCode(0);
+        }
       }
     }
-  }
-  fetchWeather();
-}, [userLat, userLong]);
+    fetchWeather();
+  }, [userLat, userLong]);
 
   const backgroundImage = getWeatherImage(weatherCode);
 
 
   return (
-    //<ScrollView contentContainerStyle={styles.scroll} bounces={false}>
+    
     <ImageBackground
       source={backgroundImage}
       style={styles.background}
       resizeMode="cover"
     >
-      <ScrollView contentContainerStyle={[styles.overlay]} bounces={false}>
+      <ScrollView
+        contentContainerStyle={[styles.overlay]}
+        bounces={false}
+      >
 
         {locationError ? (
           <Text>{locationError}</Text>
@@ -149,14 +152,14 @@ export default function HomeScreen() {
         <View style={styles.smallCards}>
 
           <UVIndexCard weather={weather} />
-          <PrecipitationCard />
+          <PrecipitationCard weather={weather} />
 
         </View>
       </ScrollView>
 
 
     </ImageBackground>
-    // </ScrollView>
+    
   );
 }
 
