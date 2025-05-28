@@ -148,7 +148,7 @@ export default function HomeScreen() {
 
         <View style={styles.smallCards}>
 
-          <UVIndexCard />
+          <UVIndexCard weather={weather} />
           <PrecipitationCard />
 
         </View>
