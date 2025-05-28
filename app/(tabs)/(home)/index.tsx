@@ -1,26 +1,17 @@
-import { View, Text, StyleSheet, ScrollView, ImageBackground, Alert } from 'react-native'
-import Ionicons from '@expo/vector-icons/Ionicons'
-import { LinearGradient } from 'expo-linear-gradient'
-import AirQualityCard from '@/components/AirQualityCard'
-import { Dimensions } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import SearchAutocomplete from '@/utils/SearchAutocompletion'
-import SearchBar from '@/utils/SearchBar'
+import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import { getWeatherData } from '@/utils/WeatherApi';
-
-import * as Location from 'expo-location';
+import { fetchUserLocation } from '@/utils/FetchUserLocation';
+import { getAirQualityData } from '../../../utils/AirQualityApi';
 import HourlyForecastCard from '@/components/HourlyForecastCard'
 import DailyForecastCard from '@/components/DailyForecastCard'
 import WindDetailsCard from '@/components/WindDetailsCard'
 import UVIndexCard from '@/components/UVIndexCard'
 import LocationDetails from '@/components/LocationDetails'
-import { getAirQualityData } from '../../../utils/AirQualityApi';
 import FeelsLikeCard from '@/components/FeelsLikeCard'
 import PrecipitationCard from '@/components/PrecipitationCard'
-
-
-
+import AirQualityCard from '@/components/AirQualityCard'
+import { Dimensions } from 'react-native'
 
 const device_width = Dimensions.get('window').width
 const device_height = Dimensions.get('window').height
@@ -61,25 +52,20 @@ export default function HomeScreen() {
   const [airQualityIndex, setAirQualityIndex] = useState<number | null>(null);
   const [weather, setWeather] = useState<any>(null);
 
-
+  // Clean location effect
   useEffect(() => {
     (async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setLocationError('Permission to access location was denied');
-          return;
-        }
-        let location = await Location.getCurrentPositionAsync({});
-        setUserLat(location.coords.latitude);
-        setUserLong(location.coords.longitude);
-      } catch (err) {
-        setLocationError('Failed to get user location');
+        const userLoc = await fetchUserLocation();
+        setUserLat(userLoc.latitude);
+        setUserLong(userLoc.longitude);
+        setLocationError(null);
+      } catch (err: any) {
+        setLocationError(err.message || 'Failed to get user location');
       }
     })();
   }, []);
 
-  // Fetch air quality index using your API handler
   useEffect(() => {
     async function fetchAirQuality() {
       if (userLat !== null && userLong !== null) {
@@ -94,7 +80,6 @@ export default function HomeScreen() {
     fetchAirQuality();
   }, [userLat, userLong]);
 
-  // Fetch weather data and set weatherCode
   useEffect(() => {
     async function fetchWeather() {
       if (userLat !== null && userLong !== null) {
@@ -113,29 +98,25 @@ export default function HomeScreen() {
 
   const backgroundImage = getWeatherImage(weatherCode);
 
-
   return (
-    
     <ImageBackground
       source={backgroundImage}
       style={styles.background}
       resizeMode="cover"
     >
-      <ScrollView
-        contentContainerStyle={[styles.overlay]}
-        bounces={false}
-      >
-
+      <ScrollView contentContainerStyle={[styles.overlay]} bounces={false}>
         {locationError ? (
           <Text>{locationError}</Text>
         ) : userLat !== null && userLong !== null ? (
-          <LocationDetails latitude={userLat} longitude={userLong} />
+          <LocationDetails
+            latitude={userLat}
+            longitude={userLong}
+          />
         ) : (
           <Text>Getting location...</Text>
         )}
 
         <HourlyForecastCard weather={weather} />
-
         <DailyForecastCard weather={weather} />
 
         <View style={styles.smallCards}>
@@ -144,22 +125,16 @@ export default function HomeScreen() {
             weatherCode={weather?.current?.weatherCode}
           />
           <WindDetailsCard weather={weather} />
-
         </View>
 
         <AirQualityCard airQualityIndex={airQualityIndex ?? 0} />
 
         <View style={styles.smallCards}>
-
           <UVIndexCard weather={weather} />
           <PrecipitationCard weather={weather} />
-
         </View>
       </ScrollView>
-
-
     </ImageBackground>
-    
   );
 }
 
