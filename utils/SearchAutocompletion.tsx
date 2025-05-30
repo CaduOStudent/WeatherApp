@@ -1,128 +1,103 @@
-// components/SearchAutocomplete.tsx
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  Pressable,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-interface Place {
-  id: string;
+export type Place = {
+  id?: string;
   name: string;
+  country?: string;
   latitude: number;
   longitude: number;
-  country?: string;
-}
+};
 
-interface SearchAutocompleteProps {
+type Props = {
   onPlaceSelect: (place: Place) => void;
-}
+  onMicPress: (setQuery: (q: string) => void) => void;
+};
 
-const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onPlaceSelect }) => {
-  const [query, setQuery] = useState<string>('');
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props) {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Place[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch search suggestions from the geocoding API
-  const fetchPlaces = async (text: string) => {
-    if (!text.trim()) {
-      setPlaces([]);
+  const fetchSuggestions = async (text: string) => {
+    setQuery(text);
+    if (text.length < 2) {
+      setResults([]);
       return;
     }
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
-          text
-        )}&count=4&language=en&format=json`
-      );
-      const data = await response.json();
-      if (data.results) {
-        // Map the API result to our Place interface.
-        // Some responses may not include an ID, so we generate one.
-        const mappedPlaces: Place[] = data.results.map((item: any, index: number) => ({
-          id: item.id ? item.id.toString() : `${item.name}-${index}`,
-          name: item.name,
-          latitude: item.latitude,
-          longitude: item.longitude,
-          country: item.country,
-        }));
-        setPlaces(mappedPlaces);
-      } else {
-        setPlaces([]);
-      }
-    } catch (error) {
-      console.error('Error fetching places:', error);
-      setPlaces([]);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(text)}&count=5&language=en&format=json`);
+      const data = await res.json();
+      setResults(data.results || []);
+    } catch {
+      setResults([]);
     }
     setLoading(false);
   };
 
-  // Update the query and debounce the API call.
-  const handleChangeText = (text: string) => {
-    setQuery(text);
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-    const timeout = setTimeout(() => {
-      fetchPlaces(text);
-    }, 300);
-    setDebounceTimer(timeout);
-  };
-
-  // Render each search result as a pressable item.
-  const renderPlaceItem = ({ item }: { item: Place }) => (
-    <Pressable
-      style={styles.placeItem}
-      onPress={() => {
-        onPlaceSelect(item);
-        // Optionally clear the suggestions after selection.
-        setQuery(item.name);
-        setPlaces([]);
-      }}>
-      <Text style={styles.placeText}>
-        {item.name}
-        {item.country ? `, ${item.country}` : ''}
-      </Text>
-    </Pressable>
-  );
-
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Search for a place..."
-        value={query}
-        onChangeText={handleChangeText}
-      />
-      {loading ? (
-        <ActivityIndicator style={styles.loader} />
-      ) : (
-        <FlatList
-          data={places}
-          keyExtractor={(item) => item.id}
-          renderItem={renderPlaceItem}
-          keyboardShouldPersistTaps="handled"
+      <View style={styles.inputRow}>
+        <TouchableOpacity onPress={() => fetchSuggestions(query)}>
+          <Ionicons name="search-outline" size={25} color="black" style={styles.icon} />
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Search for a city..."
+          placeholderTextColor="#CCC"
+          value={query}
+          onChangeText={fetchSuggestions}
+          selectTextOnFocus={false}
+          returnKeyType="search"
+          onSubmitEditing={() => fetchSuggestions(query)}
         />
-      )}
+        <TouchableOpacity onPress={() => onMicPress(setQuery)}>
+          <Ionicons name="mic-outline" size={25} color="black" style={styles.icon} />
+        </TouchableOpacity>
+      </View>
+      {loading && <ActivityIndicator style={styles.loader} />}
+      <FlatList
+        data={results}
+        keyExtractor={item => item.id || `${item.latitude},${item.longitude}`}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.placeItem} onPress={() => onPlaceSelect(item)}>
+            <Text style={styles.placeText}>
+              {item.name}, {item.country} ({item.latitude}, {item.longitude})
+            </Text>
+          </TouchableOpacity>
+        )}
+        keyboardShouldPersistTaps="handled"
+      />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 16,
+  container: { 
+    margin: 0,
+    width: '100%'
+   },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:'center',
+    backgroundColor: 'rgba(93, 92, 92, 0.75)',
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    width: '90%'
   },
   input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    padding: 12,
-    borderRadius: 4,
+    flex: 1,
+    color: '#222',
+    fontSize: 16,
+    padding: 10,
+    backgroundColor: 'transparent',
+  },
+  icon: {
+    padding: 6,
   },
   loader: {
     marginVertical: 8,
@@ -136,5 +111,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default SearchAutocomplete;

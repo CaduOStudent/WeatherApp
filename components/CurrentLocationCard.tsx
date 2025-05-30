@@ -143,7 +143,7 @@ export default function CurrentLocationCard() {
 
 const styles = StyleSheet.create({
     cardBase: {
-        width: '90%',
+        width: '95%',
         borderRadius: 40,
         overflow: 'hidden', // <-- This clips the background image to the border radius
         backgroundColor: '#fff', // Optional: fallback color
