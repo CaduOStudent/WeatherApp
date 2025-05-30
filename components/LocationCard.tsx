@@ -49,7 +49,10 @@ export default function LocationCard({ city, country, latitude, longitude }: Loc
   if (weather?.current?.time && weather?.timezone) {
     try {
       // 1. Parse the UTC time string from the API into a Date object
-      const utcDate = new Date(weather.current.time);
+      // If weather.current.time is a UNIX timestamp in seconds, convert to ms
+      const utcDate = typeof weather.current.time === 'number'
+        ? new Date(weather.current.time * 1000)
+        : new Date(weather.current.time);
 
       // 2. Format the local time in the location's timezone using Intl.DateTimeFormat
       //    - This will display the time as it would appear in the target timezone
