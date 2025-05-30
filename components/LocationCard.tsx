@@ -91,7 +91,7 @@ export default function LocationCard({ city, country, latitude, longitude }: Loc
 
 const styles = StyleSheet.create({
   cardBase: {
-    width: '90%',
+    minWidth: '90%',
     borderRadius: 40,
     overflow: 'hidden', // <-- This clips the background image to the border radius
     backgroundColor: '#fff', // Optional: fallback color
@@ -124,18 +124,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    height: 28
   },
   City: {
     color: 'rgb(249, 246, 246)',
-    fontSize: 21,
+    fontSize: 20,
     fontFamily: 'Helvetica',
     verticalAlign: 'bottom'
 
   },
   Country: {
     color: 'rgba(247, 247, 247, 0.83)',
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: 'Helvetica',
     verticalAlign: 'bottom'
   },
@@ -144,6 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Helvetica',
     verticalAlign: 'bottom',
+    
 
   },
   locationCond: {

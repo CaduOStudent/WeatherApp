@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Keyboard } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export type Place = {
@@ -19,6 +19,7 @@ export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props)
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const fetchSuggestions = async (text: string) => {
     setQuery(text);
@@ -37,6 +38,12 @@ export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props)
     setLoading(false);
   };
 
+  // Hide suggestions when keyboard is dismissed
+  React.useEffect(() => {
+    const hide = Keyboard.addListener('keyboardDidHide', () => setIsFocused(false));
+    return () => hide.remove();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.inputRow}>
@@ -52,24 +59,28 @@ export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props)
           selectTextOnFocus={false}
           returnKeyType="search"
           onSubmitEditing={() => fetchSuggestions(query)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
         <TouchableOpacity onPress={() => onMicPress(setQuery)}>
           <Ionicons name="mic-outline" size={25} color="black" style={styles.icon} />
         </TouchableOpacity>
       </View>
       {loading && <ActivityIndicator style={styles.loader} />}
-      <FlatList
-        data={results}
-        keyExtractor={item => item.id || `${item.latitude},${item.longitude}`}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.placeItem} onPress={() => onPlaceSelect(item)}>
-            <Text style={styles.placeText}>
-              {item.name}, {item.country} ({item.latitude}, {item.longitude})
-            </Text>
-          </TouchableOpacity>
-        )}
-        keyboardShouldPersistTaps="handled"
-      />
+      {isFocused && results.length > 0 && (
+        <FlatList
+          data={results}
+          keyExtractor={item => item.id || `${item.latitude},${item.longitude}`}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.placeItem} onPress={() => onPlaceSelect(item)}>
+              <Text style={styles.placeText}>
+                {item.name}, {item.country} ({item.latitude}, {item.longitude})
+              </Text>
+            </TouchableOpacity>
+          )}
+          keyboardShouldPersistTaps="handled"
+        />
+      )}
     </View>
   );
 }

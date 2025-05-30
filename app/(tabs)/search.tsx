@@ -1,15 +1,18 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import SearchAutocomplete from '@/utils/SearchAutocompletion';
 import CurrentLocationCard from '@/components/CurrentLocationCard';
+import LocationCard from '@/components/LocationCard';
+import { getSavedLocations, SavedLocation } from '@/utils/SaveLocationAPI';
 
 const device_width = 400;
 const device_height = 800;
 
 export default function Search() {
   const router = useRouter();
+  const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
 
   const handlePlaceSelect = (place: { id?: any; latitude: any; longitude: any; name: any; country?: any; }) => {
     router.push({
@@ -24,10 +27,18 @@ export default function Search() {
     });
   };
 
-  // Dummy mic handler for Expo Go
-  const handleMicPress = () => {
-    // You can show an alert or do nothing
-  };
+  const handleMicPress = () => { };
+
+  // Refresh saved locations every time the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSaved = async () => {
+        const locs = await getSavedLocations();
+        setSavedLocations(locs);
+      };
+      fetchSaved();
+    }, [])
+  );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -42,7 +53,27 @@ export default function Search() {
         <ScrollView
           bounces={false}
           contentContainerStyle={styles.SavedCards}>
-            <CurrentLocationCard/>
+          <CurrentLocationCard />
+          {savedLocations.map(loc => (
+            <TouchableOpacity
+              key={loc.id}
+              onPress={() => handlePlaceSelect({
+                id: loc.id,
+                name: loc.name,
+                country: loc.country,
+                latitude: loc.latitude,
+                longitude: loc.longitude,
+              })}
+              activeOpacity={0.8}
+            >
+              <LocationCard
+                city={loc.name}
+                country={loc.country || ''}
+                latitude={loc.latitude}
+                longitude={loc.longitude}
+              />
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
     </TouchableWithoutFeedback>
@@ -51,11 +82,10 @@ export default function Search() {
 
 const styles = StyleSheet.create({
   body: {
+    flex:1,
     width: device_width,
-    height: device_height,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
     gap: 20
   },
@@ -79,14 +109,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 25,
     padding: 10,
-
   },
   SavedCards: {
-    width: '90%',
+    flexGrow: 1,
+    width: '95%',
+    maxWidth: '95%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 20,
+    paddingBottom: 40
   },
 });

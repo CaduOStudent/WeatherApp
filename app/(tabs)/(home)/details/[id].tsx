@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, Animated, Easing } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { getWeatherData } from '@/utils/WeatherApi';
@@ -13,22 +13,62 @@ import PrecipitationCard from '@/components/PrecipitationCard'
 import AirQualityCard from '@/components/AirQualityCard'
 import { Dimensions } from 'react-native'
 import getWeatherImage from '@/utils/GetWeatherImages'
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { saveLocation, removeLocation, isLocationSaved, SavedLocation } from '@/utils/SaveLocationAPI';
+
 
 const device_width = Dimensions.get('window').width
 const device_height = Dimensions.get('window').height
 
 export default function DetailsScreen() {
   // Get params from router
-  const { latitude, longitude, city, country } = useLocalSearchParams();
+  const { latitude, longitude, city, country, id } = useLocalSearchParams();
 
   // Parse lat/lon as numbers
   const lat = latitude ? parseFloat(latitude as string) : null;
   const lon = longitude ? parseFloat(longitude as string) : null;
+  const locationId = id as string;
 
   const [weatherCode, setWeatherCode] = useState<number>(0);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [airQualityIndex, setAirQualityIndex] = useState<number | null>(null);
   const [weather, setWeather] = useState<any>(null);
+  const [saved, setSaved] = useState(false);
+  const [anim] = useState(new Animated.Value(1));
+
+  // Check if location is saved
+  useEffect(() => {
+    if (locationId) {
+      isLocationSaved(locationId).then(setSaved);
+    }
+  }, [locationId]);
+
+  // Animate heart when saved
+  const animateHeart = () => {
+    Animated.sequence([
+      Animated.timing(anim, { toValue: 1.3, duration: 150, useNativeDriver: true, easing: Easing.ease }),
+      Animated.timing(anim, { toValue: 1, duration: 150, useNativeDriver: true, easing: Easing.ease }),
+    ]).start();
+  };
+
+  // Save or remove location
+  const handleHeartPress = async () => {
+    if (!lat || !lon || !city) return;
+    if (saved) {
+      await removeLocation(locationId);
+      setSaved(false);
+    } else {
+      await saveLocation({
+        id: locationId,
+        name: typeof city === 'string' ? city : city[0],
+        country: typeof country === 'string' ? country : (country ? country[0] : ''),
+        latitude: lat,
+        longitude: lon,
+      });
+      setSaved(true);
+      animateHeart();
+    }
+  };
 
   useEffect(() => {
     async function fetchAirQuality() {
@@ -69,6 +109,18 @@ export default function DetailsScreen() {
       resizeMode="cover"
     >
       <ScrollView contentContainerStyle={[styles.overlay]} bounces={false}>
+        <View style={styles.topIcons}>
+          <Ionicons name="ellipsis-horizontal-outline" size={30} color='black' />
+          <TouchableOpacity onPress={handleHeartPress} activeOpacity={0.7}>
+            <Animated.View style={{ transform: [{ scale: anim }] }}>
+              <Ionicons
+                name={saved ? 'heart' : 'heart-outline'}
+                size={30}
+                color={saved ? 'red' : 'black'}
+              />
+            </Animated.View>
+          </TouchableOpacity>
+        </View>
         {lat === null || lon === null ? (
           <Text>Invalid location.</Text>
         ) : (
@@ -108,6 +160,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     fontFamily: 'Helvetica',
+  },
+  topIcons: {
+    position: 'fixed',
+    width: '90%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: -35
   },
   main: {
     display: 'flex',
