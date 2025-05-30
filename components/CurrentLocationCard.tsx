@@ -8,6 +8,8 @@ import { getAirQualityData } from '@/utils/AirQualityApi';
 import { Dimensions } from 'react-native'
 import formatValue from '@/utils/FormatValues'
 import { weatherCodeDescriptions } from '../utils/WeatherCodes';
+const device_width = Dimensions.get('window').width
+const device_height = Dimensions.get('window').height
 
 export default function CurrentLocationCard() {
     const [weatherCode, setWeatherCode] = useState<number>(0);
@@ -96,7 +98,10 @@ export default function CurrentLocationCard() {
             <ImageBackground
                 source={backgroundImage}
                 style={styles.background}
-                resizeMode="cover">
+                contentFit='cover'
+
+            >
+
 
                 <View style={styles.leftSide}>
                     <View style={styles.locationDesc}>
@@ -106,10 +111,10 @@ export default function CurrentLocationCard() {
                         <Text style={styles.currentCountry}>
                             {country}
                         </Text>
-                        <Text style={styles.myLoc}>
-                            My Location
-                        </Text>
                     </View>
+                    <Text style={styles.myLoc}>
+                        My Location
+                    </Text>
                     <Text style={styles.locationCond}>
                         {weather?.current?.weatherCode !== undefined
                             ? weatherCodeDescriptions[weather.current.weatherCode] || `Code: ${weather.current.weatherCode}`
@@ -138,51 +143,98 @@ export default function CurrentLocationCard() {
 
 const styles = StyleSheet.create({
     cardBase: {
-        minWidth: 300,
+        width: '90%',
         borderRadius: 40,
-        
+        overflow: 'hidden', // <-- This clips the background image to the border radius
+        backgroundColor: '#fff', // Optional: fallback color
 
     },
     background: {
-       width: '100%',
-       borderRadius: 40,
+        width: '100%',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 15,
-        padding: 15
-
+        padding: 15,
+        minHeight: 145
     },
     leftSide: {
+        minWidth: 170,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        gap: 10,
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: 'rgba(143, 164, 193, 0.37)'
 
     },
     locationDesc: {
-
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        height: 28
     },
     currentCity: {
+        color: 'rgb(249, 246, 246)',
+        fontSize: 21,
+        fontFamily: 'Helvetica',
+        verticalAlign: 'bottom'
 
     },
     currentCountry: {
-
+        color: 'rgba(247, 247, 247, 0.83)',
+        fontSize: 18,
+        fontFamily: 'Helvetica',
+        verticalAlign: 'bottom'
     },
     myLoc: {
+        color: 'rgb(245, 244, 244)',
+        fontSize: 18,
+        fontFamily: 'Helvetica',
+        verticalAlign: 'bottom',
 
     },
     locationCond: {
-
+        color: 'rgb(245, 244, 244)',
+        fontSize: 12,
+        fontFamily: 'Helvetica',
+        verticalAlign: 'bottom',
     },
     rightSide: {
+        minWidth: 100,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        gap: 10,
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: 'rgba(143, 164, 193, 0.37)'
 
     },
     currentLocationTemp: {
+        color: 'rgb(249, 246, 246)',
+        fontSize: 40,
+        fontFamily: 'Helvetica',
+        
 
     },
     locationHandLTemps: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        gap: 10
 
     },
     currentLocationHighandLow: {
-
+        color: 'rgb(249, 246, 246)',
+        fontSize: 12,
+        fontFamily: 'Helvetica',
     }
 
 
