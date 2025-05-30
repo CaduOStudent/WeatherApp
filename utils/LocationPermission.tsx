@@ -8,10 +8,12 @@ interface LocationPermissionProps {
   onLocationObtained: (latitude: number, longitude: number) => void;
 }
 
+// Component to handle requesting and checking location permission
 const LocationPermission: React.FC<LocationPermissionProps> = ({ onLocationObtained }) => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 
+  // Function to request location permission from the user
   const requestLocationPermission = async () => {
     try {
       // Select the permission key based on the platform
@@ -34,6 +36,7 @@ const LocationPermission: React.FC<LocationPermissionProps> = ({ onLocationObtai
     }
   };
 
+  // Function to get the user's current location if permission is granted
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
@@ -48,6 +51,7 @@ const LocationPermission: React.FC<LocationPermissionProps> = ({ onLocationObtai
     );
   };
 
+  // Request permission on mount
   useEffect(() => {
     requestLocationPermission();
   }, []);

@@ -1,17 +1,28 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React, { useState, useEffect } from 'react';
+// ImageBackground is used for card backgrounds
 import { ImageBackground } from 'expo-image'
+// Utility to get weather background image based on weather code
 import getWeatherImage from '@/utils/GetWeatherImages'
+// Utility to fetch weather data from API
 import { getWeatherData } from '@/utils/WeatherApi';
+// Utility to get user's current geolocation
 import { fetchUserLocation } from '@/utils/FetchUserLocation';
+// Utility to fetch air quality data
 import { getAirQualityData } from '@/utils/AirQualityApi';
 import { Dimensions } from 'react-native'
+// Utility to format temperature and other values
 import formatValue from '@/utils/FormatValues'
+// Weather code descriptions for display
 import { weatherCodeDescriptions } from '../utils/WeatherCodes';
+
+// Get device dimensions for responsive design
 const device_width = Dimensions.get('window').width
 const device_height = Dimensions.get('window').height
 
+// Main component to display the user's current location as a weather card
 export default function CurrentLocationCard() {
+    // State for weather, location, air quality, city/country, and loading/error
     const [weatherCode, setWeatherCode] = useState<number>(0);
     const [userLat, setUserLat] = useState<number | null>(null);
     const [userLong, setUserLong] = useState<number | null>(null);
@@ -23,7 +34,7 @@ export default function CurrentLocationCard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    // Clean location effect
+    // Fetch user's current geolocation on mount
     useEffect(() => {
         (async () => {
             try {
@@ -37,6 +48,7 @@ export default function CurrentLocationCard() {
         })();
     }, []);
 
+    // Fetch air quality data when location changes
     useEffect(() => {
         async function fetchAirQuality() {
             if (userLat !== null && userLong !== null) {
@@ -51,6 +63,7 @@ export default function CurrentLocationCard() {
         fetchAirQuality();
     }, [userLat, userLong]);
 
+    // Fetch weather data when location changes
     useEffect(() => {
         async function fetchWeather() {
             if (userLat !== null && userLong !== null) {
@@ -67,15 +80,16 @@ export default function CurrentLocationCard() {
         fetchWeather();
     }, [userLat, userLong]);
 
+    // Fetch city and country using reverse geocoding when location changes
     useEffect(() => {
         async function fetchData() {
             if (userLat !== null && userLong !== null) {
                 try {
-                    // Fetch weather data
+                    // Fetch weather data (again, for city/country info)
                     const weatherData = await getWeatherData(userLat, userLong)
                     setWeather(weatherData)
 
-                    // Fetch city/country using reverse geocoding
+                    // Fetch city/country using reverse geocoding API
                     const geoRes = await fetch(
                         `https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLong}&format=json`
                     )
@@ -92,17 +106,17 @@ export default function CurrentLocationCard() {
         fetchData()
     }, [userLat, userLong])
 
+    // Get background image based on weather code
     const backgroundImage = getWeatherImage(weatherCode);
+
     return (
         <View style={styles.cardBase}>
             <ImageBackground
                 source={backgroundImage}
                 style={styles.background}
                 contentFit='cover'
-
             >
-
-
+                {/* Left side: location and weather description */}
                 <View style={styles.leftSide}>
                     <View style={styles.locationDesc}>
                         <Text style={styles.currentCity}>
@@ -112,15 +126,18 @@ export default function CurrentLocationCard() {
                             {country}
                         </Text>
                     </View>
+                    {/* Label for current location */}
                     <Text style={styles.myLoc}>
                         My Location
                     </Text>
+                    {/* Display weather condition description */}
                     <Text style={styles.locationCond}>
                         {weather?.current?.weatherCode !== undefined
                             ? weatherCodeDescriptions[weather.current.weatherCode] || `Code: ${weather.current.weatherCode}`
                             : 'Weather Condition'}
                     </Text>
                 </View>
+                {/* Right side: temperature and high/low */}
                 <View style={styles.rightSide}>
                     <Text style={styles.currentLocationTemp}>
                         {formatValue(weather?.current?.temperature2m) ?? '--'}º
@@ -133,21 +150,19 @@ export default function CurrentLocationCard() {
                             H: {formatValue(weather?.daily?.temperature2mMax?.[0]) ?? '--'}º
                         </Text>
                     </View>
-
                 </View>
-
             </ImageBackground>
         </View>
     )
 }
 
+// Styles for the card and its elements
 const styles = StyleSheet.create({
     cardBase: {
         width: '95%',
         borderRadius: 40,
         overflow: 'hidden', // <-- This clips the background image to the border radius
         backgroundColor: '#fff', // Optional: fallback color
-
     },
     background: {
         width: '100%',
@@ -169,7 +184,6 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         backgroundColor: 'rgba(143, 164, 193, 0.37)'
-
     },
     locationDesc: {
         display: 'flex',
@@ -183,7 +197,6 @@ const styles = StyleSheet.create({
         fontSize: 21,
         fontFamily: 'Helvetica',
         verticalAlign: 'bottom'
-
     },
     currentCountry: {
         color: 'rgba(247, 247, 247, 0.83)',
@@ -196,7 +209,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'Helvetica',
         verticalAlign: 'bottom',
-
     },
     locationCond: {
         color: 'rgb(245, 244, 244)',
@@ -214,14 +226,11 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         backgroundColor: 'rgba(143, 164, 193, 0.37)'
-
     },
     currentLocationTemp: {
         color: 'rgb(249, 246, 246)',
         fontSize: 40,
         fontFamily: 'Helvetica',
-        
-
     },
     locationHandLTemps: {
         display: 'flex',
@@ -229,13 +238,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         gap: 10
-
     },
     currentLocationHighandLow: {
         color: 'rgb(249, 246, 246)',
         fontSize: 12,
         fontFamily: 'Helvetica',
     }
-
-
 })

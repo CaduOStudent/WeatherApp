@@ -1,7 +1,9 @@
+// Interface for the options passed to the sun protection recommendation function
 interface SunProtectionRecommendationOptions {
   uvIndex: number;
 }
 
+// Main function to get a sun protection recommendation based on UV index
 export function getSunProtectionRecommendation({ uvIndex }: SunProtectionRecommendationOptions): string {
   if (uvIndex < 3) {
     return "Low UV: No protection needed. Enjoy your day!";

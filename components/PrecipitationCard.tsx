@@ -7,6 +7,7 @@ interface PrecipitationCardProps {
   weather: any;
 }
 
+// Main component to display precipitation information for today and tomorrow
 export default function PrecipitationCard({ weather }: PrecipitationCardProps) {
   // Get today's precipitation (from daily data)
   const todayPrecip = weather?.daily?.rainSum?.[0] ?? 0;
@@ -18,11 +19,14 @@ export default function PrecipitationCard({ weather }: PrecipitationCardProps) {
 
   return (
     <View style={styles.PrecipitationCardBase}>
+      {/* Title row with icon */}
       <View style={styles.PrecipitationCardTitle}>
         <Text>Precipitation</Text>
         <Ionicons name="water-outline" size={20} color="black" />
       </View>
+      {/* Divider line */}
       <View style={styles.div} />
+      {/* Today's precipitation value */}
       <View style={styles.PrecipitationAmount}>
         <Text style={styles.PrecipitationAmountValue}>
           {formatValue(todayPrecip)} mm
@@ -32,6 +36,7 @@ export default function PrecipitationCard({ weather }: PrecipitationCardProps) {
         </Text>
       </View>
       <View style={styles.div} />
+      {/* Tomorrow's precipitation or fallback text */}
       <Text style={styles.FuturePrecipitation}>
         {futurePrecip > 0
           ? `${formatValue(futurePrecip)} mm expected tomorrow`
@@ -41,9 +46,7 @@ export default function PrecipitationCard({ weather }: PrecipitationCardProps) {
   )
 }
 
-// ...styles unchanged...
-
-
+// Styles for the PrecipitationCard and its elements
 const styles = StyleSheet.create({
   PrecipitationCardBase: {
     width: 140,
@@ -66,7 +69,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 24,
-
   },
   div: {
     width: '95%',
@@ -78,7 +80,6 @@ const styles = StyleSheet.create({
     height: 60,
     marginTop: 2,
     marginBottom: 2
-
   },
   PrecipitationAmountValue:{
     fontSize: 30,
@@ -87,7 +88,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     verticalAlign: 'middle',
     padding: 2
-
   },
   PrecipitationAmountMoment:{
     fontSize: 15,
@@ -106,7 +106,5 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     textAlign: 'center',
     padding: 3
-
   }
-
 });

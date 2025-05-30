@@ -6,9 +6,11 @@ interface SearchBarProps {
   onSearch: (results: any[]) => void;
 }
 
+// Main SearchBar component for city search
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>('');
 
+  // Handle search button press: fetch city results from Open-Meteo API
   const handleSearch = async () => {
     if (!query.trim()) return;
 

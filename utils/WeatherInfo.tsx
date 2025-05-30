@@ -1,65 +1,53 @@
-// components/WeatherInfo.tsx
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { getWeatherData } from './WeatherApi';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { weatherCodeDescriptions, weatherCodeIonicons } from '../utils/WeatherCodes';
+import formatValue from '@/utils/FormatValues';
 
 interface WeatherInfoProps {
-  latitude: number;
-  longitude: number;
+  weatherCode: number;
+  temperature: number | null | undefined;
+  label?: string;
 }
 
-const WeatherInfo: React.FC<WeatherInfoProps> = ({ latitude, longitude }) => {
-  const [weather, setWeather] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const weatherData = await getWeatherData(latitude, longitude);
-        setWeather(weatherData);
-      } catch (error) {
-        console.error('Error fetching weather data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWeather();
-  }, [latitude, longitude]);
-
-  if (loading)
-    return <ActivityIndicator size="large" style={styles.loader} />;
-  if (!weather)
-    return <Text style={styles.error}>No weather data available</Text>;
+const WeatherInfo: React.FC<WeatherInfoProps> = ({ weatherCode, temperature, label }) => {
+  const iconName = weatherCodeIonicons[weatherCode] || 'help';
+  const description = weatherCodeDescriptions[weatherCode] || `Code: ${weatherCode}`;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        Temperature: {weather.variables(0)?.value()}°C
-      </Text>
-      <Text style={styles.text}>
-        Wind Speed: {weather.variables(1)?.value()} km/h
-      </Text>
-      <Text style={styles.text}>
-        Weather Code: {weather.variables(2)?.value()}
-      </Text>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <Ionicons name={iconName as any} size={40} color="#222" style={styles.icon} />
+      <Text style={styles.temp}>{formatValue(temperature)}º</Text>
+      <Text style={styles.desc}>{description}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    margin: 16,
+    alignItems: 'center',
+    padding: 10,
   },
-  loader: {
-    marginTop: 20,
-  },
-  error: {
-    margin: 16,
-    color: 'red',
-  },
-  text: {
+  label: {
     fontSize: 16,
+    color: '#444',
     marginBottom: 4,
+  },
+  icon: {
+    marginVertical: 4,
+  },
+  temp: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#222',
+    marginVertical: 2,
+  },
+  desc: {
+    fontSize: 15,
+    color: '#555',
+    textAlign: 'center',
+    marginTop: 2,
   },
 });
 

@@ -4,11 +4,14 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { LinearGradient } from 'expo-linear-gradient'
 import formatValue from '@/utils/FormatValues'
 
+// Props for the AirQualityCard component
 type AirQualityCardProps = {
   airQualityIndex: number
 }
 
+// Main component to display air quality information
 export default function AirQualityCard({ airQualityIndex }: AirQualityCardProps) {
+  // Helper function to get a text description based on the AQI value
   function getAirQualityText(index: number) {
     if (index <= 10) return 'Good';
     if (index <= 20) return 'Fair';
@@ -21,22 +24,26 @@ export default function AirQualityCard({ airQualityIndex }: AirQualityCardProps)
 
   // Bar width must match styles.scaleBar.width
   const barWidth = 300;
-  // Clamp index between 0 and 10
+  // Clamp index between 0 and 10 for pointer position (adjust as needed for your AQI scale)
   const clampedIndex = Math.max(0, Math.min(airQualityIndex, 10));
-  // Calculate pointer position
+  // Calculate pointer position along the bar
   const pointerLeft = (clampedIndex / 80) * barWidth - 2.5; // 2.5 = pointer width/2
 
   return (
     <View style={styles.airQualityCardBaseStyle}>
+      {/* Title row with icon */}
       <View style={styles.cardTitleDiv}>
         <Text style={styles.cardTitle}>Air Quality</Text>
         <Ionicons name="filter" size={20} color="black" />
       </View>
+      {/* Divider line */}
       <View style={styles.div} />
+      {/* AQI value and description */}
       <View style={styles.AQInfos}>
         <Text style={styles.AQIndex}>{formatValue(airQualityIndex)}</Text>
         <Text style={styles.AQText}>{getAirQualityText(airQualityIndex)}</Text>
       </View>
+      {/* Gradient bar and pointer for AQI scale */}
       <View style={styles.scaleBarContainer}>
         <LinearGradient
           colors={[
@@ -47,12 +54,14 @@ export default function AirQualityCard({ airQualityIndex }: AirQualityCardProps)
           end={{ x: 1, y: 0 }}
           style={styles.scaleBar}
         />
+        {/* Pointer indicating current AQI on the bar */}
         <View style={[styles.scalePointer, { left: pointerLeft }]} />
       </View>
     </View>
   )
 }
 
+// Styles for the AirQualityCard and its elements
 const styles = StyleSheet.create({
   airQualityCardBaseStyle: {
     width: 330,

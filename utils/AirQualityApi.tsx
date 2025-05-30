@@ -1,5 +1,6 @@
 import { fetchWeatherApi } from 'openmeteo';
 
+// Interface describing the structure of air quality data returned by the API
 export interface AirQualityData {
     current: {
         time: Date;
@@ -12,7 +13,9 @@ export interface AirQualityData {
     };
 }
 
+// Function to fetch air quality data from Open-Meteo API for a given latitude and longitude
 export async function getAirQualityData(latitude: number, longitude: number): Promise<AirQualityData> {
+    // Prepare API parameters for the request
     const params = {
         latitude: [latitude],
         longitude: [longitude],
@@ -20,6 +23,7 @@ export async function getAirQualityData(latitude: number, longitude: number): Pr
         current: ["european_aqi", "uv_index"]
     };
     const url = "https://air-quality-api.open-meteo.com/v1/air-quality";
+    // Use openmeteo's fetchWeatherApi utility to make the request
     const responses = await fetchWeatherApi(url, params);
 
     const response = responses[0];
@@ -29,19 +33,23 @@ export async function getAirQualityData(latitude: number, longitude: number): Pr
         throw new Error("No response received from Air Quality API");
     }
 
+    // Get UTC offset, current, and hourly data from the response
     const utcOffsetSeconds = response.utcOffsetSeconds();
     const current = response.current();
     const hourly = response.hourly();
 
+    // Helper function to build an array of Date objects for each hourly data point
     const buildTimeArray = (obj: any) =>
         [...Array((Number(obj.timeEnd()) - Number(obj.time())) / obj.interval())].map(
             (_, i) => new Date((Number(obj.time()) + i * obj.interval() + utcOffsetSeconds) * 1000)
         );
 
+    // Error handling if current data is missing
     if (!current) {
         throw new Error("No current data received from Air Quality API");
     }
 
+    // Return the formatted air quality data
     return {
         current: {
             time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),

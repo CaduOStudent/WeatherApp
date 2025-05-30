@@ -1,22 +1,29 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
+// Utility to fetch weather data from API
 import { getWeatherData } from '../utils/WeatherApi'
+// Utility to format temperature and other values
 import formatValue from '@/utils/FormatValues'
+// Weather code descriptions for display
 import { weatherCodeDescriptions } from '../utils/WeatherCodes';
 
 interface LocationDetailsProps {
     latitude: number
     longitude: number
+    localTime: string
 }
 
-export default function LocationDetails({ latitude, longitude }: LocationDetailsProps) {
+// Main component to display details for a specific location
+export default function LocationDetails({ latitude, longitude, localTime }: LocationDetailsProps) {
 
+    // State for city/country, weather, loading, and error
     const [city, setCity] = useState<string>('Loading...')
     const [country, setCountry] = useState<string>('Loading...')
     const [weather, setWeather] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    // Fetch weather and reverse geocoding data when latitude/longitude changes
     useEffect(() => {
         async function fetchData() {
             try {
@@ -40,8 +47,27 @@ export default function LocationDetails({ latitude, longitude }: LocationDetails
         fetchData()
     }, [latitude, longitude])
 
+    // Show loading spinner if data is being fetched
+    if (loading) {
+        return (
+            <View style={styles.currentLocationTitle}>
+                <ActivityIndicator size="large" color="#1D4972" />
+            </View>
+        );
+    }
+
+    // Show error message if data failed to load
+    if (error) {
+        return (
+            <View style={styles.currentLocationTitle}>
+                <Text>{error}</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.currentLocationTitle}>
+            {/* City and country */}
             <View style={styles.currentLocationNameInfos}>
                 <Text style={styles.currentCity}>
                     {city},{' '}
@@ -50,14 +76,17 @@ export default function LocationDetails({ latitude, longitude }: LocationDetails
                     {country}
                 </Text>
             </View>
+            {/* Current temperature */}
             <Text style={styles.currentLocationTemp}>
                 {formatValue(weather?.current?.temperature2m) ?? '--'}º
             </Text>
+            {/* Weather condition description */}
             <Text style={styles.currentLocationCondition}>
                 {weather?.current?.weatherCode !== undefined
                     ? weatherCodeDescriptions[weather.current.weatherCode] || `Code: ${weather.current.weatherCode}`
                     : 'Weather Condition'}
             </Text>
+            {/* High and low temperatures */}
             <View style={styles.currentLocationTemps}>
                 <Text style={styles.currentLocationHighandLow}>
                     L: {formatValue(weather?.daily?.temperature2mMin?.[0]) ?? '--'}º
@@ -66,39 +95,16 @@ export default function LocationDetails({ latitude, longitude }: LocationDetails
                     H: {formatValue(weather?.daily?.temperature2mMax?.[0]) ?? '--'}º
                 </Text>
             </View>
-        </View>
-        /* Mock details
-            <View style={styles.currentLocationTitle}>
-            <View style={styles.currentLocationNameInfos}>
-                <Text style={styles.currentCity}>
-                    City Name,{' '}
-                </Text>
-                <Text style={styles.currentCountry}>
-                    Country
-                </Text>
-            </View>
-            <Text style={styles.currentLocationTemp}>
-                12º
-            </Text>
+            {/* Local time string, if provided */}
             <Text style={styles.currentLocationCondition}>
-                Weather Condition
+                Local Time: {localTime}
             </Text>
-            <View style={styles.currentLocationTemps}>
-                <Text style={styles.currentLocationHighandLow}>
-                    H: 5º
-                </Text>
-                <Text style={styles.currentLocationHighandLow}>
-                    L: 11º
-                </Text>
-            </View>
-        </View> */
+        </View>
     )
 }
 
-
 const styles = StyleSheet.create({
     currentLocationTitle: {
-
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -116,13 +122,12 @@ const styles = StyleSheet.create({
         verticalAlign: 'middle',
         fontSize: 60,
         color: '#F5F5F5',
-        fontWeight: 600,
-
+        fontWeight: '600',
     },
     currentLocationCondition: {
         fontSize: 15,
         color: '#1D4972',
-        fontWeight: 500
+        fontWeight: '500'
     },
     currentLocationNameInfos: {
         display: 'flex',
@@ -131,30 +136,23 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: 'center',
         padding: 5
-
     },
     currentCity: {
         color: '#F5F5F5',
         fontSize: 20,
-        fontWeight: 500
-
+        fontWeight: '500'
     },
     currentCountry: {
-        color: '000',
+        color: '#000',
         fontSize: 17,
-
     },
     currentLocationTemps: {
         display: 'flex',
         flexDirection: 'row',
         gap: 10,
-
-
     },
     currentLocationHighandLow: {
         fontSize: 17,
         color: '#fff'
-
-
     }
 });

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Keyboard } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+// Type for a place result from the geocoding API
 export type Place = {
   id?: string;
   name: string;
@@ -15,12 +16,14 @@ type Props = {
   onMicPress: (setQuery: (q: string) => void) => void;
 };
 
+// Main component for search with autocomplete and voice input
 export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
+  // Fetch suggestions from Open-Meteo geocoding API
   const fetchSuggestions = async (text: string) => {
     setQuery(text);
     if (text.length < 2) {
@@ -47,9 +50,11 @@ export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props)
   return (
     <View style={styles.container}>
       <View style={styles.inputRow}>
+        {/* Search icon triggers fetch */}
         <TouchableOpacity onPress={() => fetchSuggestions(query)}>
           <Ionicons name="search-outline" size={25} color="black" style={styles.icon} />
         </TouchableOpacity>
+        {/* Text input for city search */}
         <TextInput
           style={styles.input}
           placeholder="Search for a city..."
@@ -62,11 +67,14 @@ export default function SearchAutocomplete({ onPlaceSelect, onMicPress }: Props)
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
+        {/* Microphone icon for voice input */}
         <TouchableOpacity onPress={() => onMicPress(setQuery)}>
           <Ionicons name="mic-outline" size={25} color="black" style={styles.icon} />
         </TouchableOpacity>
       </View>
+      {/* Show loading spinner while fetching */}
       {loading && <ActivityIndicator style={styles.loader} />}
+      {/* Show suggestions if focused and results exist */}
       {isFocused && results.length > 0 && (
         <FlatList
           data={results}

@@ -1,3 +1,4 @@
+// Interface for the options passed to the recommendation function
 interface ClothesRecommendationOptions {
   temperature: number;
   weatherCode: number;
@@ -5,6 +6,7 @@ interface ClothesRecommendationOptions {
   isCloudy?: boolean;
 }
 
+// Main function to get a clothing recommendation based on weather conditions
 export function getClothesRecommendation({ temperature, weatherCode, isRaining, isCloudy }: ClothesRecommendationOptions): string {
   // Weather code ranges for rain and clouds (Open-Meteo standard)
   const rainCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82];
@@ -12,13 +14,13 @@ export function getClothesRecommendation({ temperature, weatherCode, isRaining, 
   const snowCodes = [71, 73, 75, 77, 85, 86];
   const cloudyCodes = [2, 3, 45, 48];
 
-  // Rain detection
+  // Rain detection: true if raining flag is set, or weather code matches rain/thunderstorm
   const raining = isRaining || rainCodes.includes(weatherCode) || thunderstormCodes.includes(weatherCode);
 
-  // Cloudy detection
+  // Cloudy detection: true if cloudy flag is set, or weather code matches cloudy
   const cloudy = isCloudy || cloudyCodes.includes(weatherCode);
 
-  // Recommendations
+  // Recommendations based on weather and temperature
   if (raining && temperature > 20) {
     return "It's warm and raining. Wear lighter clothes and take a jacket and an umbrella.";
   }
@@ -40,5 +42,6 @@ export function getClothesRecommendation({ temperature, weatherCode, isRaining, 
   if (temperature < 10) {
     return "It's cold. Wear warm clothes and a jacket.";
   }
+  // Default recommendation for nice weather
   return "The weather is nice. Dress comfortably!";
 }

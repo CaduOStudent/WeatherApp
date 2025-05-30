@@ -1,10 +1,13 @@
 // WeatherCodes.ts
+
+// Interface for a weather condition entry
 export interface WeatherCondition {
   code: number;
   description: string;
   IoniconName: string;
 }
 
+// Array of weather conditions with code, description, and Ionicon name (can be filled in as needed)
 export const WeatherConditions: WeatherCondition[] = [
   { code: 0, description: 'Clear sky', IoniconName: '' },
   { code: 1, description: 'Mainly clear', IoniconName: '' },
@@ -36,6 +39,7 @@ export const WeatherConditions: WeatherCondition[] = [
   { code: 99, description: 'Thunderstorm with heavy hail', IoniconName: '' },
 ];
 
+// Mapping from weather code to human-readable description
 export const weatherCodeDescriptions: { [key: number]: string } = {
     0: "Clear sky",
     1: "Mainly clear",
@@ -67,6 +71,7 @@ export const weatherCodeDescriptions: { [key: number]: string } = {
     99: "Thunderstorm with heavy hail",
 };
 
+// Mapping from weather code to Ionicons icon name for use with @expo/vector-icons/Ionicons
 export const weatherCodeIonicons: { [key: number]: string } = {
     0: "sunny", // Clear sky
     1: "partly-sunny", // Mainly clear
@@ -97,4 +102,3 @@ export const weatherCodeIonicons: { [key: number]: string } = {
     96: "thunderstorm", // Thunderstorm with slight hail
     99: "thunderstorm-sharp", // Thunderstorm with heavy hail
 };
-
