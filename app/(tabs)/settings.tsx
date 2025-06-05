@@ -1,90 +1,51 @@
 import React from 'react';
-import { View, Text, Switch, StyleSheet } from 'react-native';
-// Import context and API for unit settings
+import { StyleSheet, Switch, Text, View } from 'react-native';
 import { useUnitSettings } from '../../utils/UnitSettingsContext';
 
-// Main Settings screen component
-export default function Settings() {
-  // Access current settings and setter from context
+export default function SettingsScreen() {
   const { settings, setSettings } = useUnitSettings();
 
   return (
     <View style={styles.container}>
-      {/* Title */}
-      <Text style={styles.title}>Settings</Text>
-
-      {/* Speed unit toggle */}
-      <View style={styles.settingRow}>
-        <Text style={styles.label}>Speed (km/h / mi/h)</Text>
-        <Switch
-          value={settings.speedMetric}
-          // Update only the speedMetric property in settings
-          onValueChange={(val) => setSettings({ speedMetric: val })}
-        />
-        <Text style={styles.value}>{settings.speedMetric ? 'km/h' : 'mi/h'}</Text>
-      </View>
-
-      {/* Temperature unit toggle */}
-      <View style={styles.settingRow}>
-        <Text style={styles.label}>Temperature (ºC / ºF)</Text>
+      <Text style={styles.header}>Unit Settings</Text>
+      <View style={styles.row}>
+        <Text>Temperature (°C/°F):</Text>
         <Switch
           value={settings.tempMetric}
-          // Update only the tempMetric property in settings
-          onValueChange={(val) => setSettings({ tempMetric: val })}
+          onValueChange={v => setSettings({ tempMetric: v })}
         />
-        <Text style={styles.value}>{settings.tempMetric ? 'ºC' : 'ºF'}</Text>
+        <Text>{settings.tempMetric ? '°C' : '°F'}</Text>
       </View>
-
-      {/* Precipitation unit toggle */}
-      <View style={styles.settingRow}>
-        <Text style={styles.label}>Precipitation (mm / in)</Text>
+      <View style={styles.row}>
+        <Text>Wind Speed (km/h, mi/h):</Text>
+        <Switch
+          value={settings.speedMetric}
+          onValueChange={v => setSettings({ speedMetric: v })}
+        />
+        <Text>{settings.speedMetric ? 'km/h' : 'mi/h'}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text>Precipitation (mm/in):</Text>
         <Switch
           value={settings.precipMetric}
-          // Update only the precipMetric property in settings
-          onValueChange={(val) => setSettings({ precipMetric: val })}
+          onValueChange={v => setSettings({ precipMetric: v })}
         />
-        <Text style={styles.value}>{settings.precipMetric ? 'mm' : 'in'}</Text>
+        <Text>{settings.precipMetric ? 'mm' : 'in'}</Text>
       </View>
-
-      {/* Hour format toggle */}
-      <View style={styles.settingRow}>
-        <Text style={styles.label}>Hour Format (24h / 12h)</Text>
+      <View style={styles.row}>
+        <Text>24h Time Format:</Text>
         <Switch
           value={settings.is24h}
-          // Update only the is24h property in settings
-          onValueChange={(val) => setSettings({ is24h: val })}
+          onValueChange={v => setSettings({ is24h: v })}
         />
-        <Text style={styles.value}>{settings.is24h ? '24h' : '12h'}</Text>
+        <Text>{settings.is24h ? '24h' : '12h'}</Text>
       </View>
     </View>
   );
 }
 
-// Styles for the Settings screen and its components
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#f2f2f2',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 18,
-  },
-  label: {
-    flex: 1,
-    fontSize: 16,
-  },
-  value: {
-    width: 50,
-    textAlign: 'right',
-    fontSize: 16,
-    color: '#333',
-  },
+  container: { flex: 1, padding: 24, backgroundColor: '#fff' },
+  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 24 },
+  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 18, gap: 10 },
 });

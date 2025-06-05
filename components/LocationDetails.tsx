@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 // Utility to fetch weather data from API
-import { getWeatherData } from '../utils/WeatherApi'
+import { getWeatherData } from '../utils/WeatherApi';
 // Utility to format temperature and other values
-import formatValue from '@/utils/FormatValues'
+import formatValue from '@/utils/FormatValues';
 // Weather code descriptions for display
 import { weatherCodeDescriptions } from '../utils/WeatherCodes';
 

@@ -1,20 +1,20 @@
-import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native'
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 // Import weather and location utilities
-import { getWeatherData } from '@/utils/WeatherApi';
 import { fetchUserLocation } from '@/utils/FetchUserLocation';
+import { getWeatherData } from '@/utils/WeatherApi';
 import { getAirQualityData } from '../../utils/AirQualityApi';
 // Import weather and info cards
-import HourlyForecastCard from '@/components/HourlyForecastCard'
-import DailyForecastCard from '@/components/DailyForecastCard'
-import WindDetailsCard from '@/components/WindDetailsCard'
-import UVIndexCard from '@/components/UVIndexCard'
-import LocationDetails from '@/components/LocationDetails'
-import FeelsLikeCard from '@/components/FeelsLikeCard'
-import PrecipitationCard from '@/components/PrecipitationCard'
-import AirQualityCard from '@/components/AirQualityCard'
-import { Dimensions } from 'react-native'
-import  getWeatherImage  from '../../utils/GetWeatherImages'
+import AirQualityCard from '@/components/AirQualityCard';
+import DailyForecastCard from '@/components/DailyForecastCard';
+import FeelsLikeCard from '@/components/FeelsLikeCard';
+import HourlyForecastCard from '@/components/HourlyForecastCard';
+import LocationDetails from '@/components/LocationDetails';
+import PrecipitationCard from '@/components/PrecipitationCard';
+import UVIndexCard from '@/components/UVIndexCard';
+import WindDetailsCard from '@/components/WindDetailsCard';
+import { Dimensions } from 'react-native';
+import getWeatherImage from '../../utils/GetWeatherImages';
 
 // Get device dimensions for responsive layout
 const device_width = Dimensions.get('window').width

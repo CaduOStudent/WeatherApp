@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Type describing the structure of unit settings for the app
 export type UnitSettings = {
@@ -32,9 +33,27 @@ export const useUnitSettings = () => useContext(UnitSettingsContext);
 export function UnitSettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettingsState] = useState<UnitSettings>(defaultSettings);
 
-  // Function to update settings (merges new settings with previous)
+  // Load settings from AsyncStorage on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem('unitSettings');
+        if (stored) {
+          setSettingsState(JSON.parse(stored));
+        }
+      } catch (e) {
+        // Ignore errors, use default
+      }
+    })();
+  }, []);
+
+  // Save settings to AsyncStorage whenever they change
   const setSettings = (newSettings: Partial<UnitSettings>) => {
-    setSettingsState((prev) => ({ ...prev, ...newSettings }));
+    setSettingsState((prev) => {
+      const updated = { ...prev, ...newSettings };
+      AsyncStorage.setItem('unitSettings', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (

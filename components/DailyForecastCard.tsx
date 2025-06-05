@@ -1,8 +1,7 @@
-import { Text, View, StyleSheet } from 'react-native'
-import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 // Utility to fetch weather data (not used directly here, but imported for consistency)
-import { getWeatherData } from '../utils/WeatherApi';
 // Mapping from weather codes to Ionicon names
 import { weatherCodeIonicons } from '../utils/WeatherCodes';
 // Utility to format temperature and other values
@@ -64,7 +63,7 @@ export default function DailyForecastCard({ weather }: DailyForecastCardProps) {
     <View style={styles.DailyCardBase}>
       {/* Card title and calendar icon */}
       <View style={styles.cardTitleDiv}>
-        <Text style={styles.cardTitle}>10-Day Forecast</Text>
+        <Text style={styles.cardTitle}>7-Day Forecast</Text>
         <Ionicons name="calendar-outline" size={20} color="black" />
       </View>
       {/* Divider line */}
